@@ -685,6 +685,13 @@
       }
     }
 
+    // FIX #1: previously this function only trusted the HTTP status code
+    // (response.ok). If the backend returned a non-2xx HTTP code but the
+    // JSON body already said status: "SUCCESS" (a common backend quirk),
+    // this function would throw an error using that success-looking
+    // message, which is why you saw a "congratulations" message under a
+    // red cross. Now the JSON body's own `status` field is checked first
+    // and takes priority over the raw HTTP status code.
     async function apiFetch(url, options = {}) {
       const response = await fetch(url, {
         headers: { 'Content-Type': 'application/json' },
@@ -692,7 +699,15 @@
       });
       const contentType = response.headers.get('content-type') || '';
       const data = contentType.includes('application/json') ? await response.json() : await response.text();
-      
+
+      if (data && typeof data === 'object' && 'status' in data) {
+        const normalizedStatus = String(data.status).toUpperCase();
+        if (normalizedStatus === 'SUCCESS' || normalizedStatus === 'OK') {
+          return data;
+        }
+        throw new Error(data.message || 'Something went wrong.');
+      }
+
       if (!response.ok) {
         const message = (data && data.message) || 'Something went wrong.';
         throw new Error(message);
@@ -753,13 +768,9 @@
           method: 'POST',
           body: JSON.stringify(payload)
         });
-        if (result.status === 'SUCCESS') {
-          saveUserSession(result.student_id, payload.name, payload.phone_number);
-          setAuthMessage('Login successful.');
-          showDashboardView();
-        } else {
-          setAuthMessage(result.message || 'Login failed.', true);
-        }
+        saveUserSession(result.student_id, payload.name, payload.phone_number);
+        setAuthMessage('Login successful.');
+        showDashboardView();
       } catch (error) {
         setAuthMessage(error.message, true);
       }
@@ -867,12 +878,8 @@
           body: JSON.stringify({ student_id: state.currentStudentId, qr_string: decodedText })
         });
 
-        if (result.status === 'SUCCESS') {
-          state.currentVishnuName = result.vishnu_name;
-          showScratchCard(result.vishnu_name);
-        } else {
-          throw new Error(result.message || 'QR validation failed.');
-        }
+        state.currentVishnuName = result.vishnu_name;
+        showScratchCard(result.vishnu_name);
       } catch (error) {
         showOverlay('error', error.message);
         setTimeout(() => {
@@ -888,8 +895,29 @@
       scratchCard.classList.remove('revealed');
       resetScratchCard();
       claimInput.value = '';
+      claimBtn.disabled = false;
+      claimBtn.textContent = 'Claim Points';
       reader.classList.add('hidden');
       scratchCardWrap.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    // FIX #2: instead of doing a full window.location.reload() (which
+    // dropped the request whenever the try block was never reached due to
+    // FIX #1's bug, and even when it did run required the user to tap
+    // "Scan QR" again after the page reloaded), this now resets the UI
+    // in-place and restarts the camera automatically so the very next QR
+    // code can be scanned right away with no manual step.
+    function resetForNextScan() {
+      scratchCardWrap.classList.add('hidden');
+      scratchCard.classList.remove('revealed');
+      reader.classList.remove('hidden');
+      claimInput.value = '';
+      claimBtn.disabled = false;
+      claimBtn.textContent = 'Claim Points';
+      state.scannerBusy = false;
+      state.currentQrString = '';
+      state.currentVishnuName = '';
+      startScanner();
     }
 
     function resetScratchCard() {
@@ -1005,18 +1033,11 @@
           })
         });
 
-        // The Fix: If the backend explicitly flags an error inside a 200 OK, catch it.
-        // Otherwise, trust that it's a success and show the green tick.
-        if (result.status && result.status.toUpperCase() !== 'SUCCESS' && result.status.toUpperCase() !== 'OK') {
-          throw new Error(result.message || 'Failed to claim points.');
-        }
-
-        // Show the green overlay with the backend's message, or our fallback success message
         const successMessage = result.message || '🎉 Great job! Your points have been updated! 🎉';
         showOverlay('success', successMessage);
-        
+
         setTimeout(() => {
-          window.location.reload();
+          resetForNextScan();
         }, 1500);
       } catch (error) {
         showOverlay('error', error.message);
@@ -1042,9 +1063,6 @@
         leaderboardBody.innerHTML = `<tr><td colspan="3">${error.message}</td></tr>`;
       }
     }
-
-    showSignupBtn.addEventListener('click', () => toggleAuthForms('signup'));
-    showLoginBtn.addEventListener('click', () => toggleAuthForms('login'));
 
     routeFromStorage();
     toggleAuthForms('signup');
