@@ -14,25 +14,21 @@ app = Flask(__name__)
 CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 SUPABASE_URL = os.getenv("SUPABASE_URL")
-SUPABASE_SECRET_KEY = os.getenv("SUPABASE_SECRET_KEY") or os.getenv("SUPABASE_SERVICE_ROLE_KEY")
-SUPABASE_PUBLISHABLE_KEY = (
-    os.getenv("SUPABASE_PUBLISHABLE_KEY")
-    or os.getenv("SUPABASE_KEY")
-    or os.getenv("SUPABASE_ANON_KEY")
-)
+SUPABASE_SECRET_KEY = os.getenv("SUPABASE_SECRET_KEY")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 
 if not SUPABASE_URL:
     raise RuntimeError("Please set SUPABASE_URL in your environment or .env file.")
 
-if not SUPABASE_SECRET_KEY and not SUPABASE_PUBLISHABLE_KEY:
+if not SUPABASE_SECRET_KEY and not SUPABASE_KEY:
     raise RuntimeError(
-        "Please set SUPABASE_SECRET_KEY (preferred) or SUPABASE_PUBLISHABLE_KEY in your environment or .env file."
+        "Please set SUPABASE_SECRET_KEY (preferred) or SUPABASE_KEY in your environment or .env file."
     )
 
-supabase_key = SUPABASE_SECRET_KEY or SUPABASE_PUBLISHABLE_KEY
+supabase_key = SUPABASE_SECRET_KEY or SUPABASE_KEY
 if not SUPABASE_SECRET_KEY:
     app.logger.warning(
-        "SUPABASE_SECRET_KEY is not set. Falling back to the publishable key, which may not have table write access."
+        "SUPABASE_SECRET_KEY is not set. Falling back to SUPABASE_KEY (anon), which may not have table write access."
     )
 
 supabase: Client = create_client(SUPABASE_URL, supabase_key)
