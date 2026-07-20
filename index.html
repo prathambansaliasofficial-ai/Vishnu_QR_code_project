@@ -321,7 +321,7 @@
       border-radius: 26px;
       overflow: hidden;
       box-shadow: var(--shadow);
-      background: linear-gradient(160deg, #f8fafc, #cbd5e1);
+      background: linear-gradient(180deg, #cbd5e1, #94a3b8);
       border: 1px solid rgba(255,255,255,0.55);
       color: #111827;
     }
@@ -347,7 +347,7 @@
       font-size: 1.65rem;
       font-weight: 900;
       letter-spacing: 0.03em;
-      background: radial-gradient(circle at top, #fde68a, #f59e0b 70%);
+      background: radial-gradient(circle at top, #fef3c7, #f59e0b 70%);
       color: #111827;
       opacity: 0;
       text-shadow: 0 2px 10px rgba(255,255,255,0.7);
@@ -516,7 +516,7 @@
         </div>
 
         <div id="scratchCardWrap" class="hidden">
-          <div class="scratch-instruction">Scratch here</div>
+          <div class="scratch-instruction">Scratch here to scan</div>
           <div class="scratch-card" id="scratchCard">
             <div class="scratch-hidden-name" id="scratchHiddenName">Loading...</div>
             <canvas id="scratchCanvas" width="320" height="220"></canvas>
@@ -647,22 +647,29 @@
       authMessage.style.color = isError ? '#fca5a5' : '#9ed4ff';
     }
 
-    function showOverlay(type, message, emoji = '') {
+    function showOverlay(type, message = '', emoji = '') {
       const overlay = type === 'success' ? greenOverlay : redOverlay;
-      overlay.classList.add('show');
-      overlayMessage.textContent = message;
-      overlayMessage.classList.add('show');
+      const otherOverlay = type === 'success' ? redOverlay : greenOverlay;
 
-      if (type === 'success') {
-        overlay.textContent = emoji || '🎉';
-      } else {
+      otherOverlay.classList.remove('show');
+      overlay.classList.add('show');
+      overlayMessage.classList.remove('show');
+      overlayMessage.textContent = '';
+
+      if (type === 'error') {
+        overlayMessage.textContent = message;
+        overlayMessage.classList.add('show');
         overlay.textContent = '✕';
+      } else {
+        overlay.textContent = emoji || '🎉';
       }
 
       setTimeout(() => {
-        overlay.classList.remove('show');
+        greenOverlay.classList.remove('show');
+        redOverlay.classList.remove('show');
         overlayMessage.classList.remove('show');
-        overlay.textContent = type === 'success' ? '✓' : '✕';
+        greenOverlay.textContent = '✓';
+        redOverlay.textContent = '✕';
       }, 1800);
     }
 
@@ -898,10 +905,10 @@
       scratchCanvas.height = height * dpr;
       ctx.scale(dpr, dpr);
       ctx.clearRect(0, 0, width, height);
-      ctx.fillStyle = 'rgba(148, 163, 184, 0.55)';
+      ctx.fillStyle = 'rgba(226, 232, 240, 0.95)';
       ctx.fillRect(0, 0, width, height);
       ctx.globalCompositeOperation = 'source-over';
-      ctx.strokeStyle = 'rgba(255,255,255,0.9)';
+      ctx.strokeStyle = 'rgba(255,255,255,0.75)';
       ctx.lineWidth = 28;
       ctx.lineCap = 'round';
       ctx.lineJoin = 'round';
@@ -956,6 +963,7 @@
         state.scratchClearedRatio = ratio;
         if (ratio >= 0.8) {
           triggerBurst();
+          showOverlay('success', 'Name revealed! ✨', '✨');
           ctx.clearRect(0, 0, width, height);
           scratchCard.classList.add('revealed');
           state.scratchPointerActive = false;
@@ -997,14 +1005,17 @@
             qr_string: state.currentQrString
           })
         });
-        showOverlay('success', `${result.message || 'Points claimed successfully!'} 🎉`, '🎉');
-        scratchCardWrap.classList.add('hidden');
-        reader.classList.remove('hidden');
-        state.currentVishnuName = '';
-        state.currentQrString = '';
-        claimInput.value = '';
-        state.scannerBusy = false;
-        await startScanner();
+        showOverlay('success', '', '🎉');
+        setTimeout(async () => {
+          scratchCardWrap.classList.add('hidden');
+          reader.classList.remove('hidden');
+          state.currentVishnuName = '';
+          state.currentQrString = '';
+          claimInput.value = '';
+          state.scannerBusy = false;
+          await stopScanner();
+          await startScanner();
+        }, 1300);
       } catch (error) {
         showOverlay('error', error.message);
       }
