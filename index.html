@@ -769,7 +769,14 @@
       stopScanner();
     });
 
-    scanBtn.addEventListener('click', startScanner);
+    scanBtn.addEventListener('click', async () => {
+      try {
+        await requestCameraPermission();
+        await startScanner();
+      } catch (error) {
+        showOverlay('error', 'Please tap Allow when the browser asks for camera access to scan the QR code.');
+      }
+    });
 
     async function requestCameraPermission() {
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
@@ -802,8 +809,6 @@
         if (state.scannerStarted) {
           return;
         }
-
-        await requestCameraPermission();
 
         await state.scanner.start(
           { facingMode: 'environment' },
