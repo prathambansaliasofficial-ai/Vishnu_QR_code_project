@@ -771,6 +771,21 @@
 
     scanBtn.addEventListener('click', startScanner);
 
+    async function requestCameraPermission() {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        throw new Error('Camera access is not supported on this browser.');
+      }
+
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          facingMode: { ideal: 'environment' }
+        },
+        audio: false
+      });
+
+      stream.getTracks().forEach((track) => track.stop());
+    }
+
     async function initScanner() {
       if (!window.Html5Qrcode) {
         throw new Error('Camera scanner library failed to load.');
@@ -787,6 +802,8 @@
         if (state.scannerStarted) {
           return;
         }
+
+        await requestCameraPermission();
 
         await state.scanner.start(
           { facingMode: 'environment' },
