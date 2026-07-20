@@ -146,6 +146,7 @@
     }
 
     .primary-btn:hover, .claim-btn:hover { transform: translateY(-1px); }
+    .claim-btn:disabled { opacity: 0.7; cursor: not-allowed; }
 
     .toast {
       margin-top: 12px;
@@ -991,6 +992,10 @@
         return;
       }
 
+      // Disable the button immediately to prevent double-clicks
+      claimBtn.disabled = true;
+      claimBtn.textContent = 'Claiming...';
+
       try {
         const result = await apiFetch('/api/claim_qr', {
           method: 'POST',
@@ -1000,12 +1005,23 @@
           })
         });
 
-        showOverlay('success', '🎉 Great job! Your points have been updated! 🎉');
-        setTimeout(() => {
-          location.reload();
-        }, 1600);
+        // Check if the backend explicitly returned a success status
+        if (result.status === 'SUCCESS') {
+          showOverlay('success', '🎉 Great job! Your points have been updated! 🎉');
+          
+          // Reload automatically after 1.5 seconds 
+          setTimeout(() => {
+            window.location.reload();
+          }, 1500);
+        } else {
+          throw new Error(result.message || 'Failed to claim points.');
+        }
       } catch (error) {
         showOverlay('error', error.message);
+        
+        // Re-enable the button so they can try again if there was a true error
+        claimBtn.disabled = false;
+        claimBtn.textContent = 'Claim Points';
       }
     });
 
