@@ -1,22 +1,41 @@
 import os
 import re
 import time
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
-from flask import Flask, jsonify, request
+from dotenv import load_dotenv
+from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
 from supabase import Client, create_client
+
+load_dotenv()
 
 app = Flask(__name__)
 CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 SUPABASE_URL = os.getenv("SUPABASE_URL")
-SUPABASE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY") or os.getenv("SUPABASE_KEY") or os.getenv("SUPABASE_ANON_KEY")
+SUPABASE_SECRET_KEY = os.getenv("SUPABASE_SECRET_KEY") or os.getenv("SUPABASE_SERVICE_ROLE_KEY")
+SUPABASE_PUBLISHABLE_KEY = (
+    os.getenv("SUPABASE_PUBLISHABLE_KEY")
+    or os.getenv("SUPABASE_KEY")
+    or os.getenv("SUPABASE_ANON_KEY")
+)
 
-if not SUPABASE_URL or not SUPABASE_KEY:
-    raise RuntimeError("Please set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY (or SUPABASE_KEY) in your environment or .env file.")
+if not SUPABASE_URL:
+    raise RuntimeError("Please set SUPABASE_URL in your environment or .env file.")
 
-supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+if not SUPABASE_SECRET_KEY and not SUPABASE_PUBLISHABLE_KEY:
+    raise RuntimeError(
+        "Please set SUPABASE_SECRET_KEY (preferred) or SUPABASE_PUBLISHABLE_KEY in your environment or .env file."
+    )
+
+supabase_key = SUPABASE_SECRET_KEY or SUPABASE_PUBLISHABLE_KEY
+if not SUPABASE_SECRET_KEY:
+    app.logger.warning(
+        "SUPABASE_SECRET_KEY is not set. Falling back to the publishable key, which may not have table write access."
+    )
+
+supabase: Client = create_client(SUPABASE_URL, supabase_key)
 
 
 def json_error(message: str, status_code: int = 400):
@@ -37,11 +56,9 @@ def normalize_name(name: str) -> str:
 def validate_phone_number(phone_number: str) -> bool:
     return bool(re.fullmatch(r"\d{10}", phone_number or ""))
 
-
-@app.get("/")
-def health_check():
-    return jsonify({"status": "OK", "message": "Flask QR API is running."})
-
+@app.route('/')
+def index():
+    return send_from_directory('.', 'index.html')
 
 @app.post("/api/signup")
 def signup():
@@ -53,11 +70,14 @@ def signup():
     except ValueError as exc:
         return json_error(str(exc), 400)
 
-    if not name or not roll_number or not phone_number:
-        return json_error("name, roll_number, and phone_number are required.", 400)
+    if not name or not phone_number:
+        return json_error("name and phone_number are required.", 400)
 
     if not validate_phone_number(phone_number):
         return json_error("phone_number must be exactly 10 digits.", 400)
+
+    if not roll_number:
+        roll_number = ""
 
     student_id = f"{normalize_name(name)}_{int(time.time())}"
 
@@ -77,7 +97,13 @@ def signup():
             .execute()
         )
     except Exception as exc:
-        return json_error(f"Failed to create student record: {exc}", 500)
+        message = str(exc)
+        if "permission denied for table students" in message.lower():
+            return json_error(
+                "Supabase permission denied for students table. Set SUPABASE_SERVICE_ROLE_KEY in your backend environment and ensure the table role has INSERT access.",
+                500,
+            )
+        return json_error(f"Failed to create student record: {message}", 500)
 
     return jsonify({"student_id": student_id})
 
@@ -104,7 +130,13 @@ def login():
             .execute()
         )
     except Exception as exc:
-        return json_error(f"Failed to query student record: {exc}", 500)
+        message = str(exc)
+        if "permission denied for table students" in message.lower():
+            return json_error(
+                "Supabase permission denied for students table. Set SUPABASE_SERVICE_ROLE_KEY in your backend environment and ensure the table role has SELECT access.",
+                500,
+            )
+        return json_error(f"Failed to query student record: {message}", 500)
 
     data = response.data or []
     if not data:
