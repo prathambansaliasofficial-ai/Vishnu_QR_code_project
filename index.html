@@ -87,799 +87,914 @@
     }
 
     .toggle-row button {
-      padding: 10px;
-      border-radius: 12px;
-      font-size: 0.95rem;
-      font-weight: 600;
-      color: var(--muted);
       background: transparent;
-    }
-    .toggle-row button.active {
-      background: var(--panel-strong);
       color: var(--text);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      padding: 12px;
+      border-radius: 12px;
+      font-weight: 700;
     }
 
-    .form-group {
-      margin-bottom: 12px;
+    .toggle-row button.active {
+      background: linear-gradient(135deg, var(--accent-2), #2563eb);
+      color: white;
     }
+
+    .form-group { margin-bottom: 14px; }
     .form-group label {
       display: block;
-      font-size: 0.85rem;
-      color: var(--muted);
-      margin-bottom: 6px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
+      font-size: 0.92rem;
+      margin-bottom: 7px;
+      color: #dbeafe;
     }
-    .form-group input,
-    .form-group select {
+
+    .helper-text {
+      font-size: 0.78rem;
+      color: #cbd5e1;
+      margin-top: 5px;
+      opacity: 0.85;
+    }
+
+    input {
       width: 100%;
-      background: rgba(255,255,255,0.06);
+      padding: 13px 14px;
+      border-radius: 14px;
       border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 12px;
-      padding: 14px 16px;
+      background: rgba(255,255,255,0.05);
       color: var(--text);
-      font-size: 1rem;
       outline: none;
-    }
-    .form-group input:focus,
-    .form-group select:focus {
-      border-color: var(--accent-2);
-      background: rgba(255,255,255,0.1);
+      font-size: 1rem;
     }
 
-    .auth-btn {
+    input::placeholder { color: #8192a9; }
+    input:focus { border-color: var(--accent-2); box-shadow: 0 0 0 3px rgba(56,189,248,0.22); }
+
+    .primary-btn,
+    .scan-btn,
+    .menu-buttons button,
+    .claim-btn {
       width: 100%;
-      padding: 14px;
-      margin-top: 14px;
-      border-radius: 12px;
-      border: none;
-      background: linear-gradient(135deg, var(--accent-2), #0284c7);
-      color: #fff;
-      font-size: 1.05rem;
-      font-weight: bold;
-      cursor: pointer;
+      padding: 14px 16px;
+      border-radius: 16px;
+      font-weight: 800;
+      letter-spacing: 0.02em;
     }
-    .auth-btn:hover { filter: brightness(1.1); }
-    .auth-btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
-    #formError {
-      color: var(--danger);
-      font-size: 0.85rem;
-      margin-top: 10px;
-      text-align: center;
+    .primary-btn,
+    .claim-btn {
+      background: linear-gradient(135deg, var(--accent), #16a34a);
+      color: #04210e;
+    }
+
+    .primary-btn:hover, .claim-btn:hover { transform: translateY(-1px); }
+    .claim-btn:disabled { opacity: 0.7; cursor: not-allowed; }
+
+    .toast {
+      margin-top: 12px;
       min-height: 20px;
+      font-size: 0.89rem;
+      color: #9ed4ff;
     }
 
-    .app-header {
-      padding: 18px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: var(--panel);
-      backdrop-filter: blur(10px);
-      border-bottom: 1px solid rgba(255,255,255,0.08);
+    .dashboard-shell {
+      padding: 14px 14px 110px;
+    }
+
+    .topbar {
       position: sticky;
       top: 0;
       z-index: 10;
-    }
-    .user-info { display: flex; flex-direction: column; }
-    .user-name { font-weight: bold; font-size: 1.1rem; }
-    .user-group { font-size: 0.85rem; color: var(--accent-2); }
-    .points-badge {
-      background: rgba(251, 191, 36, 0.15);
-      border: 1px solid var(--gold);
-      color: var(--gold);
-      padding: 6px 14px;
-      border-radius: 20px;
-      font-weight: bold;
-      font-size: 1rem;
       display: flex;
       align-items: center;
-      gap: 6px;
-    }
-
-    .nav-tabs {
-      display: flex;
-      background: rgba(0,0,0,0.4);
-      padding: 10px 18px;
-      gap: 12px;
-      overflow-x: auto;
-      border-bottom: 1px solid rgba(255,255,255,0.05);
-    }
-    .nav-btn {
-      padding: 8px 16px;
-      border-radius: 20px;
-      background: rgba(255,255,255,0.05);
-      color: var(--muted);
-      font-size: 0.9rem;
-      white-space: nowrap;
-    }
-    .nav-btn.active {
-      background: var(--accent-2);
-      color: #fff;
-    }
-
-    .container {
-      padding: 18px;
-      max-width: 500px;
-      margin: 0 auto;
-    }
-
-    .tab-content { display: none; }
-    .tab-content.active { display: block; }
-
-    #qr-reader {
-      width: 100%;
-      background: #000;
-      border-radius: 16px;
-      overflow: hidden;
-      margin-bottom: 16px;
-      border: 2px solid rgba(255,255,255,0.1);
-    }
-
-    .action-btn {
-      width: 100%;
-      padding: 16px;
-      border-radius: 16px;
-      font-size: 1.1rem;
-      font-weight: bold;
-      color: #fff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      margin-bottom: 12px;
-    }
-    .btn-scan {
-      background: linear-gradient(135deg, var(--accent), #16a34a);
-    }
-    .btn-scan:hover { filter: brightness(1.1); }
-    .btn-claim {
-      background: linear-gradient(135deg, #a855f7, #7e22ce);
-    }
-    
-    .btn-logout {
-      background: rgba(239, 68, 68, 0.15);
-      color: var(--danger);
-      border: 1px solid var(--danger);
-      margin-top: 24px;
-    }
-
-    .card {
-      background: rgba(255,255,255,0.03);
-      border: 1px solid rgba(255,255,255,0.06);
-      border-radius: 16px;
-      padding: 18px;
-      margin-bottom: 16px;
-    }
-    .card h3 {
-      margin: 0 0 12px;
-      font-size: 1.1rem;
-      color: var(--accent-2);
-    }
-
-    .leaderboard-item, .history-item {
-      display: flex;
       justify-content: space-between;
-      align-items: center;
-      padding: 12px;
-      border-bottom: 1px solid rgba(255,255,255,0.05);
+      gap: 12px;
+      padding: 12px 0 14px;
+      background: linear-gradient(180deg, rgba(8,17,31,0.96), rgba(8,17,31,0.75));
+      backdrop-filter: blur(8px);
     }
-    .leaderboard-item:last-child, .history-item:last-child {
-      border: none;
-    }
-    .rank-name { display: flex; gap: 12px; align-items: center; }
-    .rank-circle {
-      width: 28px; height: 28px;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.1);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 0.8rem; font-weight: bold;
-    }
-    .top-1 .rank-circle { background: var(--gold); color: #000; }
-    .pts { font-weight: bold; color: var(--gold); }
-    .hist-name { font-weight: bold; font-size: 0.95rem; }
-    .hist-time { font-size: 0.75rem; color: var(--muted); margin-top: 4px; }
 
-    /* OVERLAYS */
-    .overlay-layer {
-      position: fixed;
-      top: 0; left: 0; width: 100vw; height: 100vh;
-      background: rgba(0, 0, 0, 0.85);
-      z-index: 100;
+    .menu-toggle {
+      width: 46px;
+      height: 46px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.06);
+      color: var(--text);
+      font-size: 1.3rem;
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+
+    .topbar h1 {
+      margin: 0;
+      font-size: 1.02rem;
+      flex: 1;
+      text-align: center;
+      color: #eff6ff;
+    }
+
+    .logout-btn {
+      background: rgba(239,68,68,0.16);
+      color: #fecaca;
+      border: 1px solid rgba(239,68,68,0.4);
+      padding: 9px 12px;
+      border-radius: 12px;
+      font-weight: 700;
+    }
+
+    .menu-panel {
+      display: none;
+      margin-top: 4px;
+      background: rgba(12, 22, 37, 0.94);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px;
+      padding: 8px;
+    }
+
+    .menu-panel.open { display: block; }
+    .menu-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .menu-buttons button {
+      background: rgba(255,255,255,0.04);
+      color: var(--text);
+      font-weight: 700;
+    }
+    .menu-buttons button.active { background: rgba(56,189,248,0.22); }
+
+    .view { display: none; }
+    .view.active { display: block; }
+
+    .scan-card {
+      background: rgba(15, 23, 42, 0.78);
+      border-radius: var(--radius);
+      padding: 16px;
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: var(--shadow);
+      margin-top: 10px;
+    }
+
+    .scan-placeholder {
+      text-align: center;
+      color: var(--muted);
+      margin-bottom: 10px;
+      font-size: 0.9rem;
+    }
+
+    #reader {
+      width: 100%;
+      min-height: 360px;
+      border-radius: 20px;
+      overflow: hidden;
+      background: #020617;
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s ease;
-      padding: 20px;
+      border: 1px solid rgba(255,255,255,0.06);
     }
-    .overlay-layer.show {
-      opacity: 1;
+
+    #reader video {
+      width: 100%;
+      max-height: 450px;
+      object-fit: cover;
+      background: #000;
+    }
+
+    .scan-btn-wrap {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 16px;
+      display: flex;
+      justify-content: center;
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    .scan-btn {
       pointer-events: auto;
+      width: min(90vw, 320px);
+      background: linear-gradient(135deg, #f8fafc, #cbd5e1);
+      color: #0f172a;
+      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.4);
+      font-size: 1.05rem;
     }
 
     .overlay {
-      width: 140px;
-      height: 140px;
-      border-radius: 50%;
+      position: fixed;
+      inset: 0;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 60px;
-      font-weight: bold;
-      color: white;
-      transform: scale(0.5);
-      transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
-    .overlay.show {
-      transform: scale(1);
-    }
-
-    .overlay-green {
-      background: var(--accent);
-      box-shadow: 0 0 40px var(--accent);
+      font-size: clamp(4rem, 18vw, 8rem);
+      font-weight: 900;
+      opacity: 0;
+      pointer-events: none;
+      transition: 0.3s ease;
+      z-index: 30;
+      text-shadow: 0 10px 25px rgba(0,0,0,0.3);
     }
 
-    .overlay-red {
-      background: var(--danger);
-      box-shadow: 0 0 40px var(--danger);
-    }
+    .overlay.show { opacity: 1; }
+    .overlay-red { background: rgba(127, 29, 29, 0.55); color: #fee2e2; }
+    .overlay-green { background: rgba(20, 83, 45, 0.55); color: #dcfce7; }
 
     .overlay-message {
-      margin-top: 24px;
-      font-size: 1.2rem;
-      font-weight: bold;
-      text-align: center;
+      position: fixed;
+      top: 20%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(15,23,42,0.92);
       color: white;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.5);
-      opacity: 0;
-      transform: translateY(20px);
-      transition: opacity 0.3s ease 0.2s, transform 0.3s ease 0.2s;
-    }
-    .overlay-message.show {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    /* Modal for claiming */
-    .modal-backdrop {
-      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.7);
-      display: flex; align-items: center; justify-content: center;
-      z-index: 50;
-      opacity: 0; pointer-events: none;
-      transition: 0.2s ease;
-    }
-    .modal-backdrop.active { opacity: 1; pointer-events: auto; }
-    .modal {
-      background: var(--panel-strong);
-      padding: 24px;
-      border-radius: 20px;
-      width: 90%; max-width: 400px;
-      border: 1px solid rgba(255,255,255,0.1);
-      box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-    }
-    .modal h2 { margin: 0 0 16px; font-size: 1.3rem; }
-    .modal p { color: var(--muted); margin-bottom: 20px; font-size: 0.95rem; }
-    .btn-row { display: flex; gap: 10px; }
-    .btn-cancel { flex: 1; background: rgba(255,255,255,0.1); color: #fff; }
-    .btn-submit { flex: 2; background: var(--accent-2); color: #fff; }
-
-    #claimInput {
-      text-transform: uppercase;
+      padding: 12px 16px;
+      border-radius: 16px;
+      font-size: 0.95rem;
+      width: min(87vw, 420px);
       text-align: center;
-      font-size: 1.2rem;
-      letter-spacing: 2px;
-      font-weight: bold;
+      display: none;
+      z-index: 31;
+      box-shadow: var(--shadow);
     }
 
+    .overlay-message.show { display: block; }
+
+    .scratch-instruction {
+      margin: 10px auto 0;
+      text-align: center;
+      font-size: 0.9rem;
+      font-weight: 800;
+      letter-spacing: 0.03em;
+      color: #f8fafc;
+      text-transform: uppercase;
+    }
+
+    .scratch-card {
+      position: relative;
+      width: 100%;
+      max-width: 360px;
+      height: 250px;
+      margin: 12px auto 12px;
+      border-radius: 26px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      background: linear-gradient(180deg, #cbd5e1, #94a3b8);
+      border: 1px solid rgba(255,255,255,0.55);
+      color: #111827;
+    }
+
+    .scratch-hidden-name {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 18px;
+      font-size: 1.65rem;
+      font-weight: 900;
+      letter-spacing: 0.03em;
+      background: radial-gradient(circle at top, #fef3c7, #f59e0b 70%);
+      color: #111827;
+      opacity: 0;
+      text-shadow: 0 2px 10px rgba(255,255,255,0.7);
+      transition: opacity 0.25s ease;
+    }
+
+    .scratch-card canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      touch-action: none;
+    }
+
+    .scratch-card.revealed .scratch-hidden-name { opacity: 1; }
+
+    .claim-wrap {
+      display: grid;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .verify-input {
+      margin-top: 8px;
+    }
+
+    .claim-btn { margin-top: 4px; }
+
+    .burst {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      border-radius: inherit;
+    }
+
+    .particle {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      animation: burst 1s ease-out forwards;
+    }
+
+    @keyframes burst {
+      0% { transform: translate(0, 0) scale(1); opacity: 1; }
+      100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; }
+    }
+
+    .leaderboard-card {
+      background: rgba(15, 23, 42, 0.78);
+      border-radius: 22px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: var(--shadow);
+      margin-top: 12px;
+    }
+
+    .leaderboard-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .leaderboard-table th,
+    .leaderboard-table td {
+      text-align: left;
+      padding: 14px 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .leaderboard-table th {
+      background: rgba(255,255,255,0.03);
+      font-size: 0.76rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #b6c2d4;
+    }
+
+    .leaderboard-table tr:last-child td { border-bottom: none; }
+
+    .rank-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 999px;
+      background: rgba(248,250,252,0.08);
+      font-weight: 800;
+    }
+
+    .hidden { display: none !important; }
+
+    @media (min-width: 768px) {
+      .auth-card { width: 460px; }
+      .dashboard-shell { max-width: 760px; margin: 0 auto; }
+      #reader { min-height: 420px; }
+    }
   </style>
 </head>
 <body>
-
-  <!-- AUTH SCREEN -->
   <div id="authScreen" class="screen active">
     <div class="auth-wrap">
       <div class="auth-card">
-        <h1 class="brand-title">Chetna Hunt</h1>
-        <p class="subtitle">Join the scavenger hunt adventure</p>
+        <h1 class="brand-title">Chetna Scavenger Hunt</h1>
+        <p class="subtitle">Join the hunt and begin scanning hidden QR treasures.</p>
 
         <div class="toggle-row">
-          <button id="toggleLogin" class="active">Log In</button>
-          <button id="toggleSignup">Sign Up</button>
+          <button id="showSignup" class="active">Sign Up</button>
+          <button id="showLogin">Log In</button>
         </div>
 
-        <form id="authForm">
-          <div class="form-group" id="nameGroup" style="display:none;">
-            <label>Full Name</label>
-            <input type="text" id="nameInput" placeholder="Enter your full name">
-          </div>
-
+        <form id="signupForm">
           <div class="form-group">
-            <label>Group (e.g. EC4)</label>
-            <input type="text" id="groupInput" placeholder="Enter your group name" required>
+            <label for="signupName">Name</label>
+            <input id="signupName" name="name" type="text" placeholder="Enter your name" required />
           </div>
-
           <div class="form-group">
-            <label>Password</label>
-            <input type="password" id="passwordInput" placeholder="Enter your password" required>
+            <label for="signupPhone">Phone Number</label>
+            <input id="signupPhone" name="phone_number" type="tel" placeholder="10 digits only" maxlength="10" inputmode="numeric" required />
           </div>
-
-          <button type="submit" class="auth-btn" id="authSubmitBtn">Log In</button>
-          <div id="formError"></div>
+          <div class="form-group">
+            <label for="signupRoll">Roll Number</label>
+            <input id="signupRoll" name="roll_number" type="text" placeholder="Optional" />
+            <div class="helper-text">If you don't have a roll number, leave this box empty.</div>
+          </div>
+          <button class="primary-btn" type="submit">Create Account</button>
         </form>
+
+        <form id="loginForm" class="hidden">
+          <div class="form-group">
+            <label for="loginName">Name</label>
+            <input id="loginName" name="name" type="text" placeholder="Enter your name" required />
+          </div>
+          <div class="form-group">
+            <label for="loginPhone">Phone Number</label>
+            <input id="loginPhone" name="phone_number" type="tel" placeholder="10 digits only" maxlength="10" inputmode="numeric" required />
+          </div>
+          <button class="primary-btn" type="submit">Log In</button>
+        </form>
+
+        <div id="authMessage" class="toast"></div>
       </div>
     </div>
   </div>
 
-  <!-- APP SCREEN -->
-  <div id="appScreen" class="screen">
-    <div class="app-header">
-      <div class="user-info">
-        <span class="user-name" id="displayUserName">Student Name</span>
-        <span class="user-group" id="displayUserGroup">Group</span>
+  <div id="dashboardScreen" class="screen">
+    <div class="dashboard-shell">
+      <div class="topbar">
+        <button id="menuToggle" class="menu-toggle" aria-label="Open menu">☰</button>
+        <h1 id="dashTitle">Chetna Hunt</h1>
+        <button id="logoutBtn" class="logout-btn">Logout</button>
       </div>
-      <div class="points-badge">
-        <span id="displayUserPoints">0</span> pts
-      </div>
-    </div>
 
-    <div class="nav-tabs">
-      <button class="nav-btn active" data-target="tab-scan">Scanner</button>
-      <button class="nav-btn" data-target="tab-leaderboard">Leaderboard</button>
-      <button class="nav-btn" data-target="tab-profile">Profile</button>
-    </div>
-
-    <div class="container">
-      
-      <!-- SCAN TAB -->
-      <div id="tab-scan" class="tab-content active">
-        <div class="card">
-          <p style="margin:0 0 16px; color:var(--muted); font-size:0.95rem;">
-            Find hidden QR codes around the campus. Scan them, guess the correct name, and earn points!
-          </p>
-          <div id="qr-reader"></div>
-          <button id="startScanBtn" class="action-btn btn-scan">
-            📷 Tap to Scan QR Code
-          </button>
-          <button id="stopScanBtn" class="action-btn btn-scan" style="display:none; background: #334155;">
-            Stop Scanning
-          </button>
+      <div id="menuPanel" class="menu-panel">
+        <div class="menu-buttons">
+          <button id="scanNav" class="active">Scan</button>
+          <button id="leaderboardNav">Leaderboard</button>
         </div>
       </div>
 
-      <!-- LEADERBOARD TAB -->
-      <div id="tab-leaderboard" class="tab-content">
-        <div class="card">
-          <h3>Top Hunters</h3>
-          <div id="leaderboardList">
-            <!-- Populated dynamically -->
-            <p style="color:var(--muted); text-align:center; padding: 20px 0;">Loading...</p>
+      <section id="scanView" class="view active">
+        <div class="scan-card">
+          <div class="scan-placeholder">Tap Scan QR and allow the browser to open your camera.</div>
+          <div id="reader"></div>
+        </div>
+
+        <div id="scratchCardWrap" class="hidden">
+          <div class="scratch-instruction">Scratch here to scan</div>
+          <div class="scratch-card" id="scratchCard">
+            <div class="scratch-hidden-name" id="scratchHiddenName">Loading...</div>
+            <canvas id="scratchCanvas" width="320" height="220"></canvas>
+            <div class="burst" id="burstLayer"></div>
+          </div>
+          <div class="claim-wrap">
+            <label for="claimInput" style="font-weight:700;">Type the exact spelling to claim your points!</label>
+            <input id="claimInput" class="verify-input" type="text" placeholder="Type exact Vishnu name" />
+            <button id="claimBtn" class="claim-btn" type="button">Claim Points</button>
           </div>
         </div>
-      </div>
+      </section>
 
-      <!-- PROFILE TAB -->
-      <div id="tab-profile" class="tab-content">
-        <div class="card">
-          <h3>My Scans</h3>
-          <div id="historyList">
-            <!-- Populated dynamically -->
-            <p style="color:var(--muted); text-align:center; padding: 20px 0;">No scans yet.</p>
-          </div>
+      <section id="leaderboardView" class="view">
+        <div class="leaderboard-card">
+          <table class="leaderboard-table">
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>Name</th>
+                <th>Points</th>
+              </tr>
+            </thead>
+            <tbody id="leaderboardBody"></tbody>
+          </table>
         </div>
-        <button id="logoutBtn" class="action-btn btn-logout">Log Out</button>
-      </div>
+      </section>
+    </div>
 
+    <div class="scan-btn-wrap">
+      <button id="scanBtn" class="scan-btn">Scan QR</button>
     </div>
   </div>
 
-  <!-- CLAIM MODAL -->
-  <div id="claimModal" class="modal-backdrop">
-    <div class="modal">
-      <h2>🎉 QR Found!</h2>
-      <p id="claimHint">You found the code for <strong>???</strong>. Type the correct name to claim points.</p>
-      
-      <div class="form-group">
-        <input type="text" id="claimInput" placeholder="e.g. VISHNU" autocomplete="off">
-      </div>
+  <div id="redOverlay" class="overlay overlay-red">✕</div>
+  <div id="greenOverlay" class="overlay overlay-green">✓</div>
+  <div id="overlayMessage" class="overlay-message"></div>
 
-      <div class="btn-row">
-        <button id="cancelClaimBtn" class="action-btn btn-cancel">Cancel</button>
-        <button id="submitClaimBtn" class="action-btn btn-submit">Claim Points</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- OVERLAYS (Success/Error) -->
-  <div id="overlayLayer" class="overlay-layer">
-    <div id="redOverlay" class="overlay overlay-red">✕</div>
-    <div id="greenOverlay" class="overlay overlay-green">✓</div>
-    <div id="overlayMessage" class="overlay-message"></div>
-  </div>
-
-  <!-- Load html5-qrcode library -->
-  <script src="https://unpkg.com/html5-qrcode"></script>
-
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
   <script>
-    // ----------------------------------------------------
-    // STATE & DOM ELEMENTS
-    // ----------------------------------------------------
-    let state = {
-      isLoginMode: true,
-      currentStudentId: null,
-      currentQrString: null,
-      currentVishnuName: null
+    const STORAGE_KEYS = {
+      studentId: 'chetna_student_id',
+      name: 'chetna_name',
+      phone: 'chetna_phone'
     };
 
-    let html5QrcodeScanner = null;
-
-    // Screens
     const authScreen = document.getElementById('authScreen');
-    const appScreen = document.getElementById('appScreen');
-
-    // Auth Form
-    const toggleLogin = document.getElementById('toggleLogin');
-    const toggleSignup = document.getElementById('toggleSignup');
-    const nameGroup = document.getElementById('nameGroup');
-    const nameInput = document.getElementById('nameInput');
-    const groupInput = document.getElementById('groupInput');
-    const passwordInput = document.getElementById('passwordInput');
-    const authForm = document.getElementById('authForm');
-    const authSubmitBtn = document.getElementById('authSubmitBtn');
-    const formError = document.getElementById('formError');
-
-    // App Headers
-    const displayUserName = document.getElementById('displayUserName');
-    const displayUserGroup = document.getElementById('displayUserGroup');
-    const displayUserPoints = document.getElementById('displayUserPoints');
-
-    // Tabs
-    const navBtns = document.querySelectorAll('.nav-btn');
-    const tabContents = document.querySelectorAll('.tab-content');
-
-    // Scanning
-    const startScanBtn = document.getElementById('startScanBtn');
-    const stopScanBtn = document.getElementById('stopScanBtn');
-
-    // Overlays
-    const overlayLayer = document.getElementById('overlayLayer');
+    const dashboardScreen = document.getElementById('dashboardScreen');
+    const signupForm = document.getElementById('signupForm');
+    const loginForm = document.getElementById('loginForm');
+    const showSignupBtn = document.getElementById('showSignup');
+    const showLoginBtn = document.getElementById('showLogin');
+    const authMessage = document.getElementById('authMessage');
+    const menuToggle = document.getElementById('menuToggle');
+    const menuPanel = document.getElementById('menuPanel');
+    const scanNav = document.getElementById('scanNav');
+    const leaderboardNav = document.getElementById('leaderboardNav');
+    const scanView = document.getElementById('scanView');
+    const leaderboardView = document.getElementById('leaderboardView');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const scanBtn = document.getElementById('scanBtn');
+    const reader = document.getElementById('reader');
+    const scratchCardWrap = document.getElementById('scratchCardWrap');
+    const scratchCard = document.getElementById('scratchCard');
+    const scratchHiddenName = document.getElementById('scratchHiddenName');
+    const scratchCanvas = document.getElementById('scratchCanvas');
+    const claimInput = document.getElementById('claimInput');
+    const claimBtn = document.getElementById('claimBtn');
+    const leaderboardBody = document.getElementById('leaderboardBody');
     const redOverlay = document.getElementById('redOverlay');
     const greenOverlay = document.getElementById('greenOverlay');
     const overlayMessage = document.getElementById('overlayMessage');
+    const burstLayer = document.getElementById('burstLayer');
 
-    // Claim Modal
-    const claimModal = document.getElementById('claimModal');
-    const claimHint = document.getElementById('claimHint');
-    const claimInput = document.getElementById('claimInput');
-    const cancelClaimBtn = document.getElementById('cancelClaimBtn');
-    const submitClaimBtn = document.getElementById('submitClaimBtn');
-    const logoutBtn = document.getElementById('logoutBtn');
+    const state = {
+      currentStudentId: localStorage.getItem(STORAGE_KEYS.studentId) || '',
+      currentName: localStorage.getItem(STORAGE_KEYS.name) || '',
+      currentPhone: localStorage.getItem(STORAGE_KEYS.phone) || '',
+      currentQrString: '',
+      currentVishnuName: '',
+      scanner: null,
+      scannerStarted: false,
+      scannerBusy: false,
+      scratchContext: null,
+      scratchPointerActive: false,
+      scratchClearedRatio: 0
+    };
 
-    // Lists
-    const leaderboardList = document.getElementById('leaderboardList');
-    const historyList = document.getElementById('historyList');
+    function setView(view) {
+      scanView.classList.toggle('active', view === 'scan');
+      leaderboardView.classList.toggle('active', view === 'leaderboard');
+      scanNav.classList.toggle('active', view === 'scan');
+      leaderboardNav.classList.toggle('active', view === 'leaderboard');
+      menuPanel.classList.remove('open');
+    }
 
-    // ----------------------------------------------------
-    // HELPER: OVERLAY
-    // ----------------------------------------------------
+    function showAuthView() {
+      authScreen.classList.add('active');
+      dashboardScreen.classList.remove('active');
+    }
+
+    function showDashboardView() {
+      authScreen.classList.remove('active');
+      dashboardScreen.classList.add('active');
+      setView('scan');
+    }
+
+    function saveUserSession(studentId, name, phone) {
+      localStorage.setItem(STORAGE_KEYS.studentId, studentId);
+      localStorage.setItem(STORAGE_KEYS.name, name);
+      localStorage.setItem(STORAGE_KEYS.phone, phone);
+      state.currentStudentId = studentId;
+      state.currentName = name;
+      state.currentPhone = phone;
+    }
+
+    function clearUserSession() {
+      localStorage.removeItem(STORAGE_KEYS.studentId);
+      localStorage.removeItem(STORAGE_KEYS.name);
+      localStorage.removeItem(STORAGE_KEYS.phone);
+      state.currentStudentId = '';
+      state.currentName = '';
+      state.currentPhone = '';
+    }
+
+    function setAuthMessage(message, isError = false) {
+      authMessage.textContent = message;
+      authMessage.style.color = isError ? '#fca5a5' : '#9ed4ff';
+    }
+
     function showOverlay(type, message) {
-      // type: 'success' | 'error'
       const overlay = type === 'success' ? greenOverlay : redOverlay;
       const otherOverlay = type === 'success' ? redOverlay : greenOverlay;
 
-      overlayLayer.classList.add('show');
       otherOverlay.classList.remove('show');
       overlay.classList.add('show');
-      
       overlayMessage.textContent = message;
       overlayMessage.classList.add('show');
 
-      // Hide after 1.8s
       setTimeout(() => {
-        overlayLayer.classList.remove('show');
-        overlay.classList.remove('show');
+        greenOverlay.classList.remove('show');
+        redOverlay.classList.remove('show');
         overlayMessage.classList.remove('show');
       }, 1800);
     }
 
-    // ----------------------------------------------------
-    // HELPER: API FETCH
-    // ----------------------------------------------------
-    async function apiFetch(url, options = {}) {
-      if (!options.headers) {
-        options.headers = { 'Content-Type': 'application/json' };
-      }
-      const response = await fetch(url, options);
-      
-      const contentType = response.headers.get('content-type') || '';
-      let data;
-      if (contentType.includes('application/json')) {
-        data = await response.json();
-      } else {
-        data = await response.text();
-      }
+    function validatePhone(phone) {
+      return /^\d{10}$/.test(phone);
+    }
 
+    function toggleAuthForms(mode) {
+      const isSignup = mode === 'signup';
+      signupForm.classList.toggle('hidden', !isSignup);
+      loginForm.classList.toggle('hidden', isSignup);
+      showSignupBtn.classList.toggle('active', isSignup);
+      showLoginBtn.classList.toggle('active', !isSignup);
+    }
+
+    function routeFromStorage() {
+      const hasSession = Boolean(state.currentStudentId && state.currentName && state.currentPhone);
+      if (hasSession) {
+        showDashboardView();
+      } else {
+        showAuthView();
+      }
+    }
+
+    async function apiFetch(url, options = {}) {
+      const response = await fetch(url, {
+        headers: { 'Content-Type': 'application/json' },
+        ...options
+      });
+      const contentType = response.headers.get('content-type') || '';
+      const data = contentType.includes('application/json') ? await response.json() : await response.text();
+      
       if (!response.ok) {
-        const message = (data && data.message) || (typeof data === 'string' ? data : 'Something went wrong.');
+        const message = (data && data.message) || 'Something went wrong.';
         throw new Error(message);
       }
       return data;
     }
 
-    // ----------------------------------------------------
-    // INITIALIZATION & AUTH
-    // ----------------------------------------------------
-    function init() {
-      const savedId = localStorage.getItem('student_id');
-      if (savedId) {
-        state.currentStudentId = savedId;
-        showAppScreen();
-      }
-    }
-
-    toggleLogin.addEventListener('click', () => {
-      state.isLoginMode = true;
-      toggleLogin.classList.add('active');
-      toggleSignup.classList.remove('active');
-      nameGroup.style.display = 'none';
-      authSubmitBtn.textContent = 'Log In';
-      formError.textContent = '';
-    });
-
-    toggleSignup.addEventListener('click', () => {
-      state.isLoginMode = false;
-      toggleSignup.classList.add('active');
-      toggleLogin.classList.remove('active');
-      nameGroup.style.display = 'block';
-      authSubmitBtn.textContent = 'Sign Up';
-      formError.textContent = '';
-    });
-
-    authForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      formError.textContent = '';
-      authSubmitBtn.disabled = true;
-      authSubmitBtn.textContent = 'Please wait...';
-
+    signupForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const formData = new FormData(signupForm);
       const payload = {
-        group_name: groupInput.value.trim(),
-        password: passwordInput.value.trim()
+        name: formData.get('name').toString().trim(),
+        phone_number: formData.get('phone_number').toString().trim(),
+        roll_number: formData.get('roll_number').toString().trim()
       };
 
-      if (!state.isLoginMode) {
-        payload.student_name = nameInput.value.trim();
-        if (!payload.student_name) {
-          formError.textContent = 'Name is required for sign up.';
-          authSubmitBtn.disabled = false;
-          authSubmitBtn.textContent = 'Sign Up';
-          return;
-        }
+      if (!payload.name) {
+        setAuthMessage('Name is required.', true);
+        return;
+      }
+      if (!validatePhone(payload.phone_number)) {
+        setAuthMessage('Phone number must be exactly 10 digits.', true);
+        return;
       }
 
-      const endpoint = state.isLoginMode ? '/api/login' : '/api/signup';
-
       try {
-        const result = await apiFetch(endpoint, {
+        await apiFetch('/api/signup', {
           method: 'POST',
           body: JSON.stringify(payload)
         });
-
-        localStorage.setItem('student_id', result.student_id);
-        state.currentStudentId = result.student_id;
-        
-        showAppScreen();
-      } catch (err) {
-        formError.textContent = err.message;
-      } finally {
-        authSubmitBtn.disabled = false;
-        authSubmitBtn.textContent = state.isLoginMode ? 'Log In' : 'Sign Up';
+        setAuthMessage('Account created. Please log in now.');
+        signupForm.reset();
+        setTimeout(() => location.reload(), 900);
+      } catch (error) {
+        setAuthMessage(error.message, true);
       }
+    });
+
+    loginForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const formData = new FormData(loginForm);
+      const payload = {
+        name: formData.get('name').toString().trim(),
+        phone_number: formData.get('phone_number').toString().trim()
+      };
+
+      if (!payload.name) {
+        setAuthMessage('Name is required.', true);
+        return;
+      }
+      if (!validatePhone(payload.phone_number)) {
+        setAuthMessage('Phone number must be exactly 10 digits.', true);
+        return;
+      }
+
+      try {
+        const result = await apiFetch('/api/login', {
+          method: 'POST',
+          body: JSON.stringify(payload)
+        });
+        if (result.status === 'SUCCESS') {
+          saveUserSession(result.student_id, payload.name, payload.phone_number);
+          setAuthMessage('Login successful.');
+          showDashboardView();
+        } else {
+          setAuthMessage(result.message || 'Login failed.', true);
+        }
+      } catch (error) {
+        setAuthMessage(error.message, true);
+      }
+    });
+
+    showSignupBtn.addEventListener('click', () => toggleAuthForms('signup'));
+    showLoginBtn.addEventListener('click', () => toggleAuthForms('login'));
+    menuToggle.addEventListener('click', () => menuPanel.classList.toggle('open'));
+
+    scanNav.addEventListener('click', () => setView('scan'));
+    leaderboardNav.addEventListener('click', async () => {
+      setView('leaderboard');
+      await loadLeaderboard();
     });
 
     logoutBtn.addEventListener('click', () => {
-      localStorage.removeItem('student_id');
-      state.currentStudentId = null;
-      if (html5QrcodeScanner) {
-        try { html5QrcodeScanner.stop(); } catch(e){}
-      }
-      appScreen.classList.remove('active');
-      authScreen.classList.add('active');
+      clearUserSession();
+      showAuthView();
+      toggleAuthForms('signup');
+      loginForm.reset();
+      signupForm.reset();
+      stopScanner();
     });
 
-    // ----------------------------------------------------
-    // APP LOGIC
-    // ----------------------------------------------------
-    async function showAppScreen() {
-      authScreen.classList.remove('active');
-      appScreen.classList.add('active');
-      loadProfileData();
-    }
-
-    async function loadProfileData() {
+    scanBtn.addEventListener('click', async () => {
       try {
-        const data = await apiFetch(`/api/profile/${state.currentStudentId}`);
-        displayUserName.textContent = data.student_name;
-        displayUserGroup.textContent = data.group_name;
-        displayUserPoints.textContent = data.total_points;
-      } catch (err) {
-        console.error('Failed to load profile', err);
-        // If profile fails, might be invalid ID, logout
-        if(err.message.toLowerCase().includes('not found')) {
-            logoutBtn.click();
-        }
+        await requestCameraPermission();
+        await startScanner();
+      } catch (error) {
+        showOverlay('error', 'Please tap Allow when the browser asks for camera access to scan the QR code.');
       }
-    }
+    });
 
-    // Tabs
-    navBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        navBtns.forEach(b => b.classList.remove('active'));
-        tabContents.forEach(t => t.classList.remove('active'));
-        
-        btn.classList.add('active');
-        const target = document.getElementById(btn.dataset.target);
-        target.classList.add('active');
+    async function requestCameraPermission() {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        throw new Error('Camera access is not supported on this browser.');
+      }
 
-        if (btn.dataset.target === 'tab-leaderboard') loadLeaderboard();
-        if (btn.dataset.target === 'tab-profile') loadHistory();
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          facingMode: { ideal: 'environment' }
+        },
+        audio: false
       });
-    });
 
-    // Lists (Leaderboard & History)
-    async function loadLeaderboard() {
-      leaderboardList.innerHTML = '<p style="text-align:center;color:#94a3b8;">Loading...</p>';
+      stream.getTracks().forEach((track) => track.stop());
+    }
+
+    async function initScanner() {
+      if (!window.Html5Qrcode) {
+        throw new Error('Camera scanner library failed to load.');
+      }
+      state.scanner = new Html5Qrcode('reader');
+    }
+
+    async function startScanner() {
       try {
-        const data = await apiFetch('/api/leaderboard');
-        leaderboardList.innerHTML = '';
-        if (data.length === 0) {
-          leaderboardList.innerHTML = '<p style="text-align:center;color:#94a3b8;">No scores yet.</p>';
+        if (!state.scanner) {
+          await initScanner();
+        }
+
+        if (state.scannerStarted) {
           return;
         }
-        data.forEach((user, index) => {
-          const cls = index === 0 ? 'top-1' : '';
-          leaderboardList.innerHTML += `
-            <div class="leaderboard-item ${cls}">
-              <div class="rank-name">
-                <div class="rank-circle">${index + 1}</div>
-                <div>
-                  <div style="font-weight:bold;">${user.student_name}</div>
-                  <div style="font-size:0.75rem;color:var(--muted);">${user.group_name}</div>
-                </div>
-              </div>
-              <div class="pts">${user.total_points}</div>
-            </div>
-          `;
-        });
-      } catch (err) {
-        leaderboardList.innerHTML = '<p style="text-align:center;color:var(--danger);">Failed to load.</p>';
+
+        await state.scanner.start(
+          { facingMode: 'environment' },
+          {
+            fps: 10,
+            qrbox: { width: 260, height: 260 },
+            aspectRatio: 1.0
+          },
+          onScanSuccess,
+          onScanFailure
+        );
+        state.scannerStarted = true;
+      } catch (error) {
+        showOverlay('error', 'Unable to start camera. Please allow camera access.');
       }
     }
 
-    async function loadHistory() {
-      historyList.innerHTML = '<p style="text-align:center;color:#94a3b8;">Loading...</p>';
+    async function stopScanner() {
+      if (!state.scanner || !state.scannerStarted) return;
       try {
-        const data = await apiFetch(`/api/history/${state.currentStudentId}`);
-        historyList.innerHTML = '';
-        if (data.length === 0) {
-          historyList.innerHTML = '<p style="text-align:center;color:#94a3b8;">No scans yet.</p>';
-          return;
-        }
-        data.forEach(scan => {
-          // Format date natively if possible, or just use string
-          let timeStr = scan.claimed_at;
-          try {
-            timeStr = new Date(scan.claimed_at).toLocaleString();
-          } catch(e){}
-
-          historyList.innerHTML += `
-            <div class="history-item">
-              <div>
-                <div class="hist-name">${scan.vishnu_name}</div>
-                <div class="hist-time">${timeStr}</div>
-              </div>
-              <div class="pts">+${scan.points_awarded}</div>
-            </div>
-          `;
-        });
-      } catch (err) {
-        historyList.innerHTML = '<p style="text-align:center;color:var(--danger);">Failed to load.</p>';
+        await state.scanner.stop();
+      } catch (error) {
+        console.warn('Scanner stop error:', error);
       }
+      state.scannerStarted = false;
     }
 
-    // ----------------------------------------------------
-    // SCANNER & CLAIM LOGIC
-    // ----------------------------------------------------
-    startScanBtn.addEventListener('click', () => {
-      if (!html5QrcodeScanner) {
-        html5QrcodeScanner = new Html5Qrcode("qr-reader");
-      }
-      
-      const config = { fps: 10, qrbox: { width: 250, height: 250 } };
-      
-      html5QrcodeScanner.start({ facingMode: "environment" }, config, onScanSuccess)
-        .then(() => {
-          startScanBtn.style.display = 'none';
-          stopScanBtn.style.display = 'flex';
-        })
-        .catch(err => {
-          showOverlay('error', 'Camera access denied or failed.');
-        });
-    });
+    function onScanFailure() {
+      return;
+    }
 
-    stopScanBtn.addEventListener('click', () => {
-      if (html5QrcodeScanner) {
-        html5QrcodeScanner.stop().then(() => {
-          startScanBtn.style.display = 'flex';
-          stopScanBtn.style.display = 'none';
-        });
-      }
-    });
-
-    function onScanSuccess(decodedText) {
-      // Stop scanner immediately
-      if (html5QrcodeScanner) {
-        html5QrcodeScanner.stop().then(() => {
-          startScanBtn.style.display = 'flex';
-          stopScanBtn.style.display = 'none';
-        });
-      }
-
+    async function onScanSuccess(decodedText) {
+      if (state.scannerBusy || !state.currentStudentId) return;
+      state.scannerBusy = true;
       state.currentQrString = decodedText;
-      verifyQrCode(decodedText);
-    }
+      await stopScanner();
 
-    async function verifyQrCode(qrString) {
       try {
-        const result = await apiFetch('/api/verify_qr', {
+        const result = await apiFetch('/api/validate_qr', {
           method: 'POST',
-          body: JSON.stringify({ qr_string: qrString })
+          body: JSON.stringify({ student_id: state.currentStudentId, qr_string: decodedText })
         });
 
-        // Store correct name, show modal
-        state.currentVishnuName = result.vishnu_name;
-        
-        let hint = result.vishnu_name.substring(0, 2) + '*'.repeat(result.vishnu_name.length - 2);
-        if (result.vishnu_name.length <= 3) hint = result.vishnu_name[0] + '*'.repeat(result.vishnu_name.length - 1);
-        
-        claimHint.innerHTML = `You found the code for an avatar starting with <strong>${hint}</strong>.`;
-        claimInput.value = '';
-        claimModal.classList.add('active');
-        
-        setTimeout(() => claimInput.focus(), 100);
-
+        if (result.status === 'SUCCESS') {
+          state.currentVishnuName = result.vishnu_name;
+          showScratchCard(result.vishnu_name);
+        } else {
+          throw new Error(result.message || 'QR validation failed.');
+        }
       } catch (error) {
         showOverlay('error', error.message);
+        setTimeout(() => {
+          state.scannerBusy = false;
+          startScanner();
+        }, 3000);
       }
     }
 
-    cancelClaimBtn.addEventListener('click', () => {
-      claimModal.classList.remove('active');
-      state.currentQrString = null;
-      state.currentVishnuName = null;
-    });
+    function showScratchCard(name) {
+      scratchHiddenName.textContent = name;
+      scratchCardWrap.classList.remove('hidden');
+      scratchCard.classList.remove('revealed');
+      resetScratchCard();
+      claimInput.value = '';
+      reader.classList.add('hidden');
+      scratchCardWrap.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
 
-    // ====== THE FIX IS IN THIS BLOCK BELOW ======
-    submitClaimBtn.addEventListener('click', async () => {
+    function resetScratchCard() {
+      const ctx = scratchCanvas.getContext('2d');
+      state.scratchContext = ctx;
+      const dpr = window.devicePixelRatio || 1;
+      const width = scratchCanvas.clientWidth || 320;
+      const height = scratchCanvas.clientHeight || 220;
+      scratchCanvas.width = width * dpr;
+      scratchCanvas.height = height * dpr;
+      ctx.scale(dpr, dpr);
+      ctx.clearRect(0, 0, width, height);
+      ctx.fillStyle = 'rgba(148, 163, 184, 0.55)';
+      ctx.fillRect(0, 0, width, height);
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.strokeStyle = 'rgba(255,255,255,0.9)';
+      ctx.lineWidth = 28;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      state.scratchClearedRatio = 0;
+
+      let hasMoved = false;
+      const scratchStart = (event) => {
+        hasMoved = true;
+        state.scratchPointerActive = true;
+        const pos = getCanvasPos(event);
+        ctx.beginPath();
+        ctx.moveTo(pos.x, pos.y);
+        ctx.lineTo(pos.x + 0.1, pos.y + 0.1);
+        ctx.stroke();
+      };
+
+      const scratchMove = (event) => {
+        if (!state.scratchPointerActive) return;
+        const pos = getCanvasPos(event);
+        ctx.lineTo(pos.x, pos.y);
+        ctx.stroke();
+        checkScratchProgress();
+      };
+
+      const scratchEnd = () => {
+        state.scratchPointerActive = false;
+        if (hasMoved) {
+          checkScratchProgress();
+        }
+      };
+
+      scratchCanvas.onpointerdown = scratchStart;
+      scratchCanvas.onpointermove = scratchMove;
+      scratchCanvas.onpointerup = scratchEnd;
+      scratchCanvas.onpointerleave = scratchEnd;
+
+      function getCanvasPos(event) {
+        const rect = scratchCanvas.getBoundingClientRect();
+        return {
+          x: event.clientX - rect.left,
+          y: event.clientY - rect.top
+        };
+      }
+
+      function checkScratchProgress() {
+        const imageData = ctx.getImageData(0, 0, width, height).data;
+        let cleared = 0;
+        for (let i = 3; i < imageData.length; i += 4) {
+          if (imageData[i] < 180) cleared++;
+        }
+        const ratio = cleared / (width * height);
+        state.scratchClearedRatio = ratio;
+        if (ratio >= 0.8) {
+          triggerBurst();
+          ctx.clearRect(0, 0, width, height);
+          scratchCard.classList.add('revealed');
+          state.scratchPointerActive = false;
+        }
+      }
+    }
+
+    function triggerBurst() {
+      burstLayer.innerHTML = '';
+      const colors = ['#fbbf24', '#22c55e', '#38bdf8', '#f87171', '#f472b6'];
+      for (let i = 0; i < 30; i++) {
+        const p = document.createElement('span');
+        p.className = 'particle';
+        p.style.left = `${Math.random() * 100}%`;
+        p.style.top = `${Math.random() * 100}%`;
+        p.style.background = colors[Math.floor(Math.random() * colors.length)];
+        p.style.setProperty('--tx', `${(Math.random() - 0.5) * 120}px`);
+        p.style.setProperty('--ty', `${(Math.random() - 0.5) * 120}px`);
+        burstLayer.appendChild(p);
+      }
+    }
+
+    claimBtn.addEventListener('click', async () => {
       const typedName = claimInput.value.trim();
-      
       if (!typedName) {
         showOverlay('error', 'Please type the name before claiming.');
         return;
       }
-      
       if (typedName.toLowerCase() !== state.currentVishnuName.toLowerCase()) {
         showOverlay('error', 'Name does not match exactly. Try again.');
         return;
       }
 
-      submitClaimBtn.disabled = true;
-      submitClaimBtn.textContent = 'Claiming...';
+      claimBtn.disabled = true;
+      claimBtn.textContent = 'Claiming...';
 
       try {
         const result = await apiFetch('/api/claim_qr', {
@@ -890,55 +1005,55 @@
           })
         });
 
-        claimModal.classList.remove('active');
-
-        // Check if backend EXPLICITLY says it failed
-        if (result && (result.error === true || result.status === 'error' || result.status === 'failed')) {
+        // The Fix: If the backend explicitly flags an error inside a 200 OK, catch it.
+        // Otherwise, trust that it's a success and show the green tick.
+        if (result.status && result.status.toUpperCase() !== 'SUCCESS' && result.status.toUpperCase() !== 'OK') {
           throw new Error(result.message || 'Failed to claim points.');
         }
 
-        // NO STRICT CHECKS ANYMORE. If it didn't throw an error above, IT IS A SUCCESS!
-        const successMessage = (result && result.message) ? result.message : '🎉 Great job! Your points have been updated! 🎉';
-        
-        // SHOW GREEN TICK
+        // Show the green overlay with the backend's message, or our fallback success message
+        const successMessage = result.message || '🎉 Great job! Your points have been updated! 🎉';
         showOverlay('success', successMessage);
         
         setTimeout(() => {
           window.location.reload();
         }, 1500);
-
       } catch (error) {
-        claimModal.classList.remove('active');
-        
-        const errorText = error.message || 'Something went wrong.';
-
-        // ==========================================
-        // THE ULTIMATE FAILSAFE
-        // If the backend accidentally throws an error code, 
-        // but the message says "Congratulations" or "Success", 
-        // FORCE the green tick anyway!
-        // ==========================================
-        const lowerError = errorText.toLowerCase();
-        if (lowerError.includes('congratulat') || lowerError.includes('success') || lowerError.includes('points have been updated')) {
-           
-           showOverlay('success', errorText); // Force Green Tick
-           
-           setTimeout(() => {
-             window.location.reload();
-           }, 1500);
-           return;
-        }
-
-        // Normal Error (Red Cross)
-        showOverlay('error', errorText);
-        
-        submitClaimBtn.disabled = false;
-        submitClaimBtn.textContent = 'Claim Points';
+        showOverlay('error', error.message);
+        claimBtn.disabled = false;
+        claimBtn.textContent = 'Claim Points';
       }
     });
 
-    // Run on load
-    init();
+    async function loadLeaderboard() {
+      try {
+        const data = await apiFetch('/api/leaderboard');
+        leaderboardBody.innerHTML = '';
+        data.forEach((entry, index) => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td><span class="rank-badge">${index + 1}</span></td>
+            <td>${entry.name}</td>
+            <td>${entry.current_scans}</td>
+          `;
+          leaderboardBody.appendChild(row);
+        });
+      } catch (error) {
+        leaderboardBody.innerHTML = `<tr><td colspan="3">${error.message}</td></tr>`;
+      }
+    }
+
+    showSignupBtn.addEventListener('click', () => toggleAuthForms('signup'));
+    showLoginBtn.addEventListener('click', () => toggleAuthForms('login'));
+
+    routeFromStorage();
+    toggleAuthForms('signup');
+
+    window.addEventListener('resize', () => {
+      if (scratchCanvas.width && state.scratchContext) {
+        resetScratchCard();
+      }
+    });
   </script>
 </body>
 </html>
