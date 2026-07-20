@@ -100,7 +100,7 @@ def signup():
         message = str(exc)
         if "permission denied for table students" in message.lower():
             return json_error(
-                "Supabase permission denied for students table. Set SUPABASE_SERVICE_ROLE_KEY in your backend environment and ensure the table role has INSERT access.",
+                "Supabase permission denied for students table. Set SUPABASE_SECRET_KEY in your Vercel environment and ensure the table role has INSERT access.",
                 500,
             )
         return json_error(f"Failed to create student record: {message}", 500)
@@ -133,7 +133,7 @@ def login():
         message = str(exc)
         if "permission denied for table students" in message.lower():
             return json_error(
-                "Supabase permission denied for students table. Set SUPABASE_SERVICE_ROLE_KEY in your backend environment and ensure the table role has SELECT access.",
+                "Supabase permission denied for students table. Set SUPABASE_SECRET_KEY in your Vercel environment and ensure the table role has SELECT access.",
                 500,
             )
         return json_error(f"Failed to query student record: {message}", 500)
