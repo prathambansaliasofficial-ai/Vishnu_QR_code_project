@@ -692,6 +692,7 @@
       });
       const contentType = response.headers.get('content-type') || '';
       const data = contentType.includes('application/json') ? await response.json() : await response.text();
+      
       if (!response.ok) {
         const message = (data && data.message) || 'Something went wrong.';
         throw new Error(message);
@@ -992,7 +993,6 @@
         return;
       }
 
-      // Disable the button immediately to prevent double-clicks
       claimBtn.disabled = true;
       claimBtn.textContent = 'Claiming...';
 
@@ -1005,21 +1005,21 @@
           })
         });
 
-        // Check if the backend explicitly returned a success status
-        if (result.status === 'SUCCESS') {
-          showOverlay('success', '🎉 Great job! Your points have been updated! 🎉');
-          
-          // Reload automatically after 1.5 seconds 
-          setTimeout(() => {
-            window.location.reload();
-          }, 1500);
-        } else {
+        // The Fix: If the backend explicitly flags an error inside a 200 OK, catch it.
+        // Otherwise, trust that it's a success and show the green tick.
+        if (result.status && result.status.toUpperCase() !== 'SUCCESS' && result.status.toUpperCase() !== 'OK') {
           throw new Error(result.message || 'Failed to claim points.');
         }
+
+        // Show the green overlay with the backend's message, or our fallback success message
+        const successMessage = result.message || '🎉 Great job! Your points have been updated! 🎉';
+        showOverlay('success', successMessage);
+        
+        setTimeout(() => {
+          window.location.reload();
+        }, 1500);
       } catch (error) {
         showOverlay('error', error.message);
-        
-        // Re-enable the button so they can try again if there was a true error
         claimBtn.disabled = false;
         claimBtn.textContent = 'Claim Points';
       }
