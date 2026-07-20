@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Chetna Scavenger Hunt</title>
+  <style>
+    :root {
+      --bg: #08111f;
+      --panel: rgba(15, 23, 42, 0.9);
+      --panel-strong: #0f172a;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --accent: #22c55e;
+      --accent-2: #38bdf8;
+      --danger: #ef4444;
+      --gold: #fbbf24;
+      --shadow: 0 16px 45px rgba(0, 0, 0, 0.35);
+      --radius: 22px;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background:
+        radial-gradient(circle at top, rgba(56, 189, 248, 0.35), transparent 25%),
+        linear-gradient(180deg, #06101b, #121927 60%, #09111d);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .screen { display: none; min-height: 100vh; }
+    .screen.active { display: block; }
+
+    .auth-wrap {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+    }
+
+    .auth-card {
+      width: min(100%, 420px);
+      background: rgba(10, 18, 32, 0.92);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+      padding: 22px;
+      backdrop-filter: blur(10px);
+    }
+
+    .brand-title {
+      font-size: 1.6rem;
+      font-weight: 800;
+      margin: 0 0 6px;
+      text-align: center;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: var(--muted);
+      margin: 0 0 18px;
+      font-size: 0.95rem;
+    }
+
+    .toggle-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      background: rgba(255,255,255,0.04);
+      padding: 6px;
+      border-radius: 16px;
+      margin-bottom: 16px;
+    }
+
+    .toggle-row button,
+    .menu-buttons button,
+    .action-btn,
+    .nav-btn {
+      appearance: none;
+      border: none;
+      cursor: pointer;
+      transition: 0.25s ease;
+    }
+
+    .toggle-row button {
+      background: transparent;
+      color: var(--text);
+      padding: 12px;
+      border-radius: 12px;
+      font-weight: 700;
+    }
+
+    .toggle-row button.active {
+      background: linear-gradient(135deg, var(--accent-2), #2563eb);
+      color: white;
+    }
+
+    .form-group { margin-bottom: 14px; }
+    .form-group label {
+      display: block;
+      font-size: 0.92rem;
+      margin-bottom: 7px;
+      color: #dbeafe;
+    }
+
+    .helper-text {
+      font-size: 0.78rem;
+      color: #cbd5e1;
+      margin-top: 5px;
+      opacity: 0.85;
+    }
+
+    input {
+      width: 100%;
+      padding: 13px 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.05);
+      color: var(--text);
+      outline: none;
+      font-size: 1rem;
+    }
+
+    input::placeholder { color: #8192a9; }
+    input:focus { border-color: var(--accent-2); box-shadow: 0 0 0 3px rgba(56,189,248,0.22); }
+
+    .primary-btn,
+    .scan-btn,
+    .menu-buttons button,
+    .claim-btn {
+      width: 100%;
+      padding: 14px 16px;
+      border-radius: 16px;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+    }
+
+    .primary-btn,
+    .claim-btn {
+      background: linear-gradient(135deg, var(--accent), #16a34a);
+      color: #04210e;
+    }
+
+    .primary-btn:hover, .claim-btn:hover { transform: translateY(-1px); }
+
+    .toast {
+      margin-top: 12px;
+      min-height: 20px;
+      font-size: 0.89rem;
+      color: #9ed4ff;
+    }
+
+    .dashboard-shell {
+      padding: 14px 14px 110px;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 0 14px;
+      background: linear-gradient(180deg, rgba(8,17,31,0.96), rgba(8,17,31,0.75));
+      backdrop-filter: blur(8px);
+    }
+
+    .menu-toggle {
+      width: 46px;
+      height: 46px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.06);
+      color: var(--text);
+      font-size: 1.3rem;
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+
+    .topbar h1 {
+      margin: 0;
+      font-size: 1.02rem;
+      flex: 1;
+      text-align: center;
+      color: #eff6ff;
+    }
+
+    .logout-btn {
+      background: rgba(239,68,68,0.16);
+      color: #fecaca;
+      border: 1px solid rgba(239,68,68,0.4);
+      padding: 9px 12px;
+      border-radius: 12px;
+      font-weight: 700;
+    }
+
+    .menu-panel {
+      display: none;
+      margin-top: 4px;
+      background: rgba(12, 22, 37, 0.94);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px;
+      padding: 8px;
+    }
+
+    .menu-panel.open { display: block; }
+    .menu-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .menu-buttons button {
+      background: rgba(255,255,255,0.04);
+      color: var(--text);
+      font-weight: 700;
+    }
+    .menu-buttons button.active { background: rgba(56,189,248,0.22); }
+
+    .view { display: none; }
+    .view.active { display: block; }
+
+    .scan-card {
+      background: rgba(15, 23, 42, 0.78);
+      border-radius: var(--radius);
+      padding: 16px;
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: var(--shadow);
+      margin-top: 10px;
+    }
+
+    .scan-placeholder {
+      text-align: center;
+      color: var(--muted);
+      margin-bottom: 10px;
+      font-size: 0.9rem;
+    }
+
+    #reader {
+      width: 100%;
+      min-height: 360px;
+      border-radius: 20px;
+      overflow: hidden;
+      background: #020617;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+
+    #reader video {
+      width: 100%;
+      max-height: 450px;
+      object-fit: cover;
+      background: #000;
+    }
+
+    .scan-btn-wrap {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 16px;
+      display: flex;
+      justify-content: center;
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    .scan-btn {
+      pointer-events: auto;
+      width: min(90vw, 320px);
+      background: linear-gradient(135deg, #f8fafc, #cbd5e1);
+      color: #0f172a;
+      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.4);
+      font-size: 1.05rem;
+    }
+
+    .overlay {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: clamp(4rem, 18vw, 8rem);
+      font-weight: 900;
+      opacity: 0;
+      pointer-events: none;
+      transition: 0.3s ease;
+      z-index: 30;
+      text-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    }
+
+    .overlay.show { opacity: 1; }
+    .overlay-red { background: rgba(127, 29, 29, 0.55); color: #fee2e2; }
+    .overlay-green { background: rgba(20, 83, 45, 0.55); color: #dcfce7; }
+
+    .overlay-message {
+      position: fixed;
+      top: 20%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(15,23,42,0.92);
+      color: white;
+      padding: 12px 16px;
+      border-radius: 16px;
+      font-size: 0.95rem;
+      width: min(87vw, 420px);
+      text-align: center;
+      display: none;
+      z-index: 31;
+      box-shadow: var(--shadow);
+    }
+
+    .overlay-message.show { display: block; }
+
+    .scratch-card {
+      position: relative;
+      width: 100%;
+      max-width: 360px;
+      height: 250px;
+      margin: 16px auto 12px;
+      border-radius: 26px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      background: linear-gradient(160deg, #f8fafc, #cbd5e1);
+      border: 1px solid rgba(255,255,255,0.55);
+      color: #111827;
+    }
+
+    .scratch-hidden-name {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 18px;
+      font-size: 1.65rem;
+      font-weight: 900;
+      letter-spacing: 0.03em;
+      background: radial-gradient(circle at top, #fde68a, #f59e0b 70%);
+      color: #111827;
+      text-shadow: 0 2px 10px rgba(255,255,255,0.7);
+    }
+
+    .scratch-card canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      touch-action: none;
+    }
+
+    .scratch-card.revealed .scratch-hidden-name { opacity: 0.15; }
+
+    .claim-wrap {
+      display: grid;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .verify-input {
+      margin-top: 8px;
+    }
+
+    .claim-btn { margin-top: 4px; }
+
+    .burst {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      border-radius: inherit;
+    }
+
+    .particle {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      animation: burst 1s ease-out forwards;
+    }
+
+    @keyframes burst {
+      0% { transform: translate(0, 0) scale(1); opacity: 1; }
+      100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; }
+    }
+
+    .leaderboard-card {
+      background: rgba(15, 23, 42, 0.78);
+      border-radius: 22px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: var(--shadow);
+      margin-top: 12px;
+    }
+
+    .leaderboard-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .leaderboard-table th,
+    .leaderboard-table td {
+      text-align: left;
+      padding: 14px 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .leaderboard-table th {
+      background: rgba(255,255,255,0.03);
+      font-size: 0.76rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #b6c2d4;
+    }
+
+    .leaderboard-table tr:last-child td { border-bottom: none; }
+
+    .rank-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 999px;
+      background: rgba(248,250,252,0.08);
+      font-weight: 800;
+    }
+
+    .hidden { display: none !important; }
+
+    @media (min-width: 768px) {
+      .auth-card { width: 460px; }
+      .dashboard-shell { max-width: 760px; margin: 0 auto; }
+      #reader { min-height: 420px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="authScreen" class="screen active">
+    <div class="auth-wrap">
+      <div class="auth-card">
+        <h1 class="brand-title">Chetna Scavenger Hunt</h1>
+        <p class="subtitle">Join the hunt and begin scanning hidden QR treasures.</p>
+
+        <div class="toggle-row">
+          <button id="showSignup" class="active">Sign Up</button>
+          <button id="showLogin">Log In</button>
+        </div>
+
+        <form id="signupForm">
+          <div class="form-group">
+            <label for="signupName">Name</label>
+            <input id="signupName" name="name" type="text" placeholder="Enter your name" required />
+          </div>
+          <div class="form-group">
+            <label for="signupPhone">Phone Number</label>
+            <input id="signupPhone" name="phone_number" type="tel" placeholder="10 digits only" maxlength="10" inputmode="numeric" required />
+          </div>
+          <div class="form-group">
+            <label for="signupRoll">Roll Number</label>
+            <input id="signupRoll" name="roll_number" type="text" placeholder="Optional" />
+            <div class="helper-text">If you don't have a roll number, leave this box empty.</div>
+          </div>
+          <button class="primary-btn" type="submit">Create Account</button>
+        </form>
+
+        <form id="loginForm" class="hidden">
+          <div class="form-group">
+            <label for="loginName">Name</label>
+            <input id="loginName" name="name" type="text" placeholder="Enter your name" required />
+          </div>
+          <div class="form-group">
+            <label for="loginPhone">Phone Number</label>
+            <input id="loginPhone" name="phone_number" type="tel" placeholder="10 digits only" maxlength="10" inputmode="numeric" required />
+          </div>
+          <button class="primary-btn" type="submit">Log In</button>
+        </form>
+
+        <div id="authMessage" class="toast"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="dashboardScreen" class="screen">
+    <div class="dashboard-shell">
+      <div class="topbar">
+        <button id="menuToggle" class="menu-toggle" aria-label="Open menu">☰</button>
+        <h1 id="dashTitle">Chetna Hunt</h1>
+        <button id="logoutBtn" class="logout-btn">Logout</button>
+      </div>
+
+      <div id="menuPanel" class="menu-panel">
+        <div class="menu-buttons">
+          <button id="scanNav" class="active">Scan</button>
+          <button id="leaderboardNav">Leaderboard</button>
+        </div>
+      </div>
+
+      <section id="scanView" class="view active">
+        <div class="scan-card">
+          <div class="scan-placeholder">Click below to activate your camera and scan a code.</div>
+          <div id="reader"></div>
+        </div>
+
+        <div id="scratchCardWrap" class="hidden">
+          <div class="scratch-card" id="scratchCard">
+            <div class="scratch-hidden-name" id="scratchHiddenName">Loading...</div>
+            <canvas id="scratchCanvas" width="320" height="220"></canvas>
+            <div class="burst" id="burstLayer"></div>
+          </div>
+          <div class="claim-wrap">
+            <label for="claimInput" style="font-weight:700;">Type the exact spelling to claim your points!</label>
+            <input id="claimInput" class="verify-input" type="text" placeholder="Type exact Vishnu name" />
+            <button id="claimBtn" class="claim-btn" type="button">Claim Points</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="leaderboardView" class="view">
+        <div class="leaderboard-card">
+          <table class="leaderboard-table">
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>Name</th>
+                <th>Points</th>
+              </tr>
+            </thead>
+            <tbody id="leaderboardBody"></tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+
+    <div class="scan-btn-wrap">
+      <button id="scanBtn" class="scan-btn">Scan QR</button>
+    </div>
+  </div>
+
+  <div id="redOverlay" class="overlay overlay-red">✕</div>
+  <div id="greenOverlay" class="overlay overlay-green">✓</div>
+  <div id="overlayMessage" class="overlay-message"></div>
+
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/minified/html5-qrcode.min.js"></script>
+  <script>
+    const STORAGE_KEYS = {
+      studentId: 'chetna_student_id',
+      name: 'chetna_name',
+      phone: 'chetna_phone'
+    };
+
+    const authScreen = document.getElementById('authScreen');
+    const dashboardScreen = document.getElementById('dashboardScreen');
+    const signupForm = document.getElementById('signupForm');
+    const loginForm = document.getElementById('loginForm');
+    const showSignupBtn = document.getElementById('showSignup');
+    const showLoginBtn = document.getElementById('showLogin');
+    const authMessage = document.getElementById('authMessage');
+    const menuToggle = document.getElementById('menuToggle');
+    const menuPanel = document.getElementById('menuPanel');
+    const scanNav = document.getElementById('scanNav');
+    const leaderboardNav = document.getElementById('leaderboardNav');
+    const scanView = document.getElementById('scanView');
+    const leaderboardView = document.getElementById('leaderboardView');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const scanBtn = document.getElementById('scanBtn');
+    const reader = document.getElementById('reader');
+    const scratchCardWrap = document.getElementById('scratchCardWrap');
+    const scratchCard = document.getElementById('scratchCard');
+    const scratchHiddenName = document.getElementById('scratchHiddenName');
+    const scratchCanvas = document.getElementById('scratchCanvas');
+    const claimInput = document.getElementById('claimInput');
+    const claimBtn = document.getElementById('claimBtn');
+    const leaderboardBody = document.getElementById('leaderboardBody');
+    const redOverlay = document.getElementById('redOverlay');
+    const greenOverlay = document.getElementById('greenOverlay');
+    const overlayMessage = document.getElementById('overlayMessage');
+    const burstLayer = document.getElementById('burstLayer');
+
+    const state = {
+      currentStudentId: localStorage.getItem(STORAGE_KEYS.studentId) || '',
+      currentName: localStorage.getItem(STORAGE_KEYS.name) || '',
+      currentPhone: localStorage.getItem(STORAGE_KEYS.phone) || '',
+      currentQrString: '',
+      currentVishnuName: '',
+      scanner: null,
+      scannerStarted: false,
+      scannerBusy: false,
+      scratchContext: null,
+      scratchPointerActive: false,
+      scratchClearedRatio: 0
+    };
+
+    function setView(view) {
+      scanView.classList.toggle('active', view === 'scan');
+      leaderboardView.classList.toggle('active', view === 'leaderboard');
+      scanNav.classList.toggle('active', view === 'scan');
+      leaderboardNav.classList.toggle('active', view === 'leaderboard');
+      menuPanel.classList.remove('open');
+    }
+
+    function showAuthView() {
+      authScreen.classList.add('active');
+      dashboardScreen.classList.remove('active');
+    }
+
+    function showDashboardView() {
+      authScreen.classList.remove('active');
+      dashboardScreen.classList.add('active');
+      setView('scan');
+    }
+
+    function saveUserSession(studentId, name, phone) {
+      localStorage.setItem(STORAGE_KEYS.studentId, studentId);
+      localStorage.setItem(STORAGE_KEYS.name, name);
+      localStorage.setItem(STORAGE_KEYS.phone, phone);
+      state.currentStudentId = studentId;
+      state.currentName = name;
+      state.currentPhone = phone;
+    }
+
+    function clearUserSession() {
+      localStorage.removeItem(STORAGE_KEYS.studentId);
+      localStorage.removeItem(STORAGE_KEYS.name);
+      localStorage.removeItem(STORAGE_KEYS.phone);
+      state.currentStudentId = '';
+      state.currentName = '';
+      state.currentPhone = '';
+    }
+
+    function setAuthMessage(message, isError = false) {
+      authMessage.textContent = message;
+      authMessage.style.color = isError ? '#fca5a5' : '#9ed4ff';
+    }
+
+    function showOverlay(type, message) {
+      const overlay = type === 'success' ? greenOverlay : redOverlay;
+      overlay.classList.add('show');
+      overlayMessage.textContent = message;
+      overlayMessage.classList.add('show');
+      setTimeout(() => {
+        overlay.classList.remove('show');
+        overlayMessage.classList.remove('show');
+      }, 1800);
+    }
+
+    function validatePhone(phone) {
+      return /^\d{10}$/.test(phone);
+    }
+
+    function toggleAuthForms(mode) {
+      const isSignup = mode === 'signup';
+      signupForm.classList.toggle('hidden', !isSignup);
+      loginForm.classList.toggle('hidden', isSignup);
+      showSignupBtn.classList.toggle('active', isSignup);
+      showLoginBtn.classList.toggle('active', !isSignup);
+    }
+
+    function routeFromStorage() {
+      const hasSession = Boolean(state.currentStudentId && state.currentName && state.currentPhone);
+      if (hasSession) {
+        showDashboardView();
+      } else {
+        showAuthView();
+      }
+    }
+
+    async function apiFetch(url, options = {}) {
+      const response = await fetch(url, {
+        headers: { 'Content-Type': 'application/json' },
+        ...options
+      });
+      const contentType = response.headers.get('content-type') || '';
+      const data = contentType.includes('application/json') ? await response.json() : await response.text();
+      if (!response.ok) {
+        const message = (data && data.message) || 'Something went wrong.';
+        throw new Error(message);
+      }
+      return data;
+    }
+
+    signupForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const formData = new FormData(signupForm);
+      const payload = {
+        name: formData.get('name').toString().trim(),
+        phone_number: formData.get('phone_number').toString().trim(),
+        roll_number: formData.get('roll_number').toString().trim()
+      };
+
+      if (!payload.name) {
+        setAuthMessage('Name is required.', true);
+        return;
+      }
+      if (!validatePhone(payload.phone_number)) {
+        setAuthMessage('Phone number must be exactly 10 digits.', true);
+        return;
+      }
+
+      try {
+        await apiFetch('/api/signup', {
+          method: 'POST',
+          body: JSON.stringify(payload)
+        });
+        setAuthMessage('Account created. Please log in now.');
+        signupForm.reset();
+        setTimeout(() => location.reload(), 900);
+      } catch (error) {
+        setAuthMessage(error.message, true);
+      }
+    });
+
+    loginForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const formData = new FormData(loginForm);
+      const payload = {
+        name: formData.get('name').toString().trim(),
+        phone_number: formData.get('phone_number').toString().trim()
+      };
+
+      if (!payload.name) {
+        setAuthMessage('Name is required.', true);
+        return;
+      }
+      if (!validatePhone(payload.phone_number)) {
+        setAuthMessage('Phone number must be exactly 10 digits.', true);
+        return;
+      }
+
+      try {
+        const result = await apiFetch('/api/login', {
+          method: 'POST',
+          body: JSON.stringify(payload)
+        });
+        if (result.status === 'SUCCESS') {
+          saveUserSession(result.student_id, payload.name, payload.phone_number);
+          setAuthMessage('Login successful.');
+          showDashboardView();
+        } else {
+          setAuthMessage(result.message || 'Login failed.', true);
+        }
+      } catch (error) {
+        setAuthMessage(error.message, true);
+      }
+    });
+
+    showSignupBtn.addEventListener('click', () => toggleAuthForms('signup'));
+    showLoginBtn.addEventListener('click', () => toggleAuthForms('login'));
+    menuToggle.addEventListener('click', () => menuPanel.classList.toggle('open'));
+
+    scanNav.addEventListener('click', () => setView('scan'));
+    leaderboardNav.addEventListener('click', async () => {
+      setView('leaderboard');
+      await loadLeaderboard();
+    });
+
+    logoutBtn.addEventListener('click', () => {
+      clearUserSession();
+      showAuthView();
+      toggleAuthForms('signup');
+      loginForm.reset();
+      signupForm.reset();
+      stopScanner();
+    });
+
+    scanBtn.addEventListener('click', startScanner);
+
+    async function initScanner() {
+      if (!window.Html5Qrcode) {
+        throw new Error('Camera scanner library failed to load.');
+      }
+      state.scanner = new Html5Qrcode('reader');
+    }
+
+    async function startScanner() {
+      try {
+        if (!state.scanner) {
+          await initScanner();
+        }
+
+        if (state.scannerStarted) {
+          return;
+        }
+
+        await state.scanner.start(
+          { facingMode: 'environment' },
+          {
+            fps: 10,
+            qrbox: { width: 260, height: 260 },
+            aspectRatio: 1.0
+          },
+          onScanSuccess,
+          onScanFailure
+        );
+        state.scannerStarted = true;
+      } catch (error) {
+        showOverlay('error', 'Unable to start camera. Please allow camera access.');
+      }
+    }
+
+    async function stopScanner() {
+      if (!state.scanner || !state.scannerStarted) return;
+      try {
+        await state.scanner.stop();
+      } catch (error) {
+        console.warn('Scanner stop error:', error);
+      }
+      state.scannerStarted = false;
+    }
+
+    function onScanFailure() {
+      return;
+    }
+
+    async function onScanSuccess(decodedText) {
+      if (state.scannerBusy || !state.currentStudentId) return;
+      state.scannerBusy = true;
+      state.currentQrString = decodedText;
+      await stopScanner();
+
+      try {
+        const result = await apiFetch('/api/validate_qr', {
+          method: 'POST',
+          body: JSON.stringify({ student_id: state.currentStudentId, qr_string: decodedText })
+        });
+
+        if (result.status === 'SUCCESS') {
+          state.currentVishnuName = result.vishnu_name;
+          showScratchCard(result.vishnu_name);
+        } else {
+          throw new Error(result.message || 'QR validation failed.');
+        }
+      } catch (error) {
+        showOverlay('error', error.message);
+        setTimeout(() => {
+          state.scannerBusy = false;
+          startScanner();
+        }, 3000);
+      }
+    }
+
+    function showScratchCard(name) {
+      scratchHiddenName.textContent = name;
+      scratchCardWrap.classList.remove('hidden');
+      scratchCard.classList.remove('revealed');
+      resetScratchCard();
+      claimInput.value = '';
+      reader.classList.add('hidden');
+      scratchCardWrap.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    function resetScratchCard() {
+      const ctx = scratchCanvas.getContext('2d');
+      state.scratchContext = ctx;
+      const dpr = window.devicePixelRatio || 1;
+      const width = scratchCanvas.clientWidth || 320;
+      const height = scratchCanvas.clientHeight || 220;
+      scratchCanvas.width = width * dpr;
+      scratchCanvas.height = height * dpr;
+      ctx.scale(dpr, dpr);
+      ctx.clearRect(0, 0, width, height);
+      ctx.fillStyle = 'rgba(148, 163, 184, 0.55)';
+      ctx.fillRect(0, 0, width, height);
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.strokeStyle = 'rgba(255,255,255,0.9)';
+      ctx.lineWidth = 28;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      state.scratchClearedRatio = 0;
+
+      let hasMoved = false;
+      const scratchStart = (event) => {
+        hasMoved = true;
+        state.scratchPointerActive = true;
+        const pos = getCanvasPos(event);
+        ctx.beginPath();
+        ctx.moveTo(pos.x, pos.y);
+        ctx.lineTo(pos.x + 0.1, pos.y + 0.1);
+        ctx.stroke();
+      };
+
+      const scratchMove = (event) => {
+        if (!state.scratchPointerActive) return;
+        const pos = getCanvasPos(event);
+        ctx.lineTo(pos.x, pos.y);
+        ctx.stroke();
+        checkScratchProgress();
+      };
+
+      const scratchEnd = () => {
+        state.scratchPointerActive = false;
+        if (hasMoved) {
+          checkScratchProgress();
+        }
+      };
+
+      scratchCanvas.onpointerdown = scratchStart;
+      scratchCanvas.onpointermove = scratchMove;
+      scratchCanvas.onpointerup = scratchEnd;
+      scratchCanvas.onpointerleave = scratchEnd;
+
+      function getCanvasPos(event) {
+        const rect = scratchCanvas.getBoundingClientRect();
+        return {
+          x: event.clientX - rect.left,
+          y: event.clientY - rect.top
+        };
+      }
+
+      function checkScratchProgress() {
+        const imageData = ctx.getImageData(0, 0, width, height).data;
+        let cleared = 0;
+        for (let i = 3; i < imageData.length; i += 4) {
+          if (imageData[i] < 180) cleared++;
+        }
+        const ratio = cleared / (width * height);
+        state.scratchClearedRatio = ratio;
+        if (ratio >= 0.8) {
+          triggerBurst();
+          ctx.clearRect(0, 0, width, height);
+          scratchCard.classList.add('revealed');
+          state.scratchPointerActive = false;
+        }
+      }
+    }
+
+    function triggerBurst() {
+      burstLayer.innerHTML = '';
+      const colors = ['#fbbf24', '#22c55e', '#38bdf8', '#f87171', '#f472b6'];
+      for (let i = 0; i < 30; i++) {
+        const p = document.createElement('span');
+        p.className = 'particle';
+        p.style.left = `${Math.random() * 100}%`;
+        p.style.top = `${Math.random() * 100}%`;
+        p.style.background = colors[Math.floor(Math.random() * colors.length)];
+        p.style.setProperty('--tx', `${(Math.random() - 0.5) * 120}px`);
+        p.style.setProperty('--ty', `${(Math.random() - 0.5) * 120}px`);
+        burstLayer.appendChild(p);
+      }
+    }
+
+    claimBtn.addEventListener('click', async () => {
+      const typedName = claimInput.value.trim();
+      if (!typedName) {
+        showOverlay('error', 'Please type the name before claiming.');
+        return;
+      }
+      if (typedName.toLowerCase() !== state.currentVishnuName.toLowerCase()) {
+        showOverlay('error', 'Name does not match exactly. Try again.');
+        return;
+      }
+
+      try {
+        const result = await apiFetch('/api/claim_qr', {
+          method: 'POST',
+          body: JSON.stringify({
+            student_id: state.currentStudentId,
+            qr_string: state.currentQrString
+          })
+        });
+        showOverlay('success', result.message || 'Points claimed successfully!');
+        scratchCardWrap.classList.add('hidden');
+        reader.classList.remove('hidden');
+        state.currentVishnuName = '';
+        state.currentQrString = '';
+        claimInput.value = '';
+        state.scannerBusy = false;
+        await startScanner();
+      } catch (error) {
+        showOverlay('error', error.message);
+      }
+    });
+
+    async function loadLeaderboard() {
+      try {
+        const data = await apiFetch('/api/leaderboard');
+        leaderboardBody.innerHTML = '';
+        data.forEach((entry, index) => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td><span class="rank-badge">${index + 1}</span></td>
+            <td>${entry.name}</td>
+            <td>${entry.current_scans}</td>
+          `;
+          leaderboardBody.appendChild(row);
+        });
+      } catch (error) {
+        leaderboardBody.innerHTML = `<tr><td colspan="3">${error.message}</td></tr>`;
+      }
+    }
+
+    showSignupBtn.addEventListener('click', () => toggleAuthForms('signup'));
+    showLoginBtn.addEventListener('click', () => toggleAuthForms('login'));
+
+    routeFromStorage();
+    toggleAuthForms('signup');
+
+    window.addEventListener('resize', () => {
+      if (scratchCanvas.width && state.scratchContext) {
+        resetScratchCard();
+      }
+    });
+  </script>
+</body>
+</html>
