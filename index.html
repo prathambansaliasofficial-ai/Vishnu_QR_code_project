@@ -317,23 +317,13 @@
       width: 100%;
       max-width: 360px;
       height: 250px;
-      margin: 12px auto 12px;
+      margin: 16px auto 12px;
       border-radius: 26px;
       overflow: hidden;
       box-shadow: var(--shadow);
-      background: linear-gradient(180deg, #cbd5e1, #94a3b8);
+      background: linear-gradient(160deg, #f8fafc, #cbd5e1);
       border: 1px solid rgba(255,255,255,0.55);
       color: #111827;
-    }
-
-    .scratch-instruction {
-      margin: 10px auto 0;
-      text-align: center;
-      font-size: 0.9rem;
-      font-weight: 800;
-      letter-spacing: 0.03em;
-      color: #f8fafc;
-      text-transform: uppercase;
     }
 
     .scratch-hidden-name {
@@ -347,11 +337,9 @@
       font-size: 1.65rem;
       font-weight: 900;
       letter-spacing: 0.03em;
-      background: radial-gradient(circle at top, #fef3c7, #f59e0b 70%);
+      background: radial-gradient(circle at top, #fde68a, #f59e0b 70%);
       color: #111827;
-      opacity: 0;
       text-shadow: 0 2px 10px rgba(255,255,255,0.7);
-      transition: opacity 0.25s ease;
     }
 
     .scratch-card canvas {
@@ -362,7 +350,7 @@
       touch-action: none;
     }
 
-    .scratch-card.revealed .scratch-hidden-name { opacity: 1; }
+    .scratch-card.revealed .scratch-hidden-name { opacity: 0.15; }
 
     .claim-wrap {
       display: grid;
@@ -516,7 +504,6 @@
         </div>
 
         <div id="scratchCardWrap" class="hidden">
-          <div class="scratch-instruction">Scratch here to scan</div>
           <div class="scratch-card" id="scratchCard">
             <div class="scratch-hidden-name" id="scratchHiddenName">Loading...</div>
             <canvas id="scratchCanvas" width="320" height="220"></canvas>
@@ -555,7 +542,7 @@
   <div id="greenOverlay" class="overlay overlay-green">✓</div>
   <div id="overlayMessage" class="overlay-message"></div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/minified/html5-qrcode.min.js"></script>
   <script>
     const STORAGE_KEYS = {
       studentId: 'chetna_student_id',
@@ -647,29 +634,19 @@
       authMessage.style.color = isError ? '#fca5a5' : '#9ed4ff';
     }
 
-    function showOverlay(type, message = '', emoji = '') {
+    function showOverlay(type, message) {
       const overlay = type === 'success' ? greenOverlay : redOverlay;
       const otherOverlay = type === 'success' ? redOverlay : greenOverlay;
 
       otherOverlay.classList.remove('show');
       overlay.classList.add('show');
-      overlayMessage.classList.remove('show');
-      overlayMessage.textContent = '';
-
-      if (type === 'error') {
-        overlayMessage.textContent = message;
-        overlayMessage.classList.add('show');
-        overlay.textContent = '✕';
-      } else {
-        overlay.textContent = emoji || '🎉';
-      }
+      overlayMessage.textContent = message;
+      overlayMessage.classList.add('show');
 
       setTimeout(() => {
         greenOverlay.classList.remove('show');
         redOverlay.classList.remove('show');
         overlayMessage.classList.remove('show');
-        greenOverlay.textContent = '✓';
-        redOverlay.textContent = '✕';
       }, 1800);
     }
 
@@ -794,21 +771,6 @@
 
     scanBtn.addEventListener('click', startScanner);
 
-    async function requestCameraPermission() {
-      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        throw new Error('Camera access is not supported on this browser.');
-      }
-
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: {
-          facingMode: { ideal: 'environment' }
-        },
-        audio: false
-      });
-
-      stream.getTracks().forEach((track) => track.stop());
-    }
-
     async function initScanner() {
       if (!window.Html5Qrcode) {
         throw new Error('Camera scanner library failed to load.');
@@ -826,8 +788,6 @@
           return;
         }
 
-        await requestCameraPermission();
-
         await state.scanner.start(
           { facingMode: 'environment' },
           {
@@ -840,7 +800,7 @@
         );
         state.scannerStarted = true;
       } catch (error) {
-        showOverlay('error', error.message || 'Unable to start camera. Please allow camera access.');
+        showOverlay('error', 'Unable to start camera. Please allow camera access.');
       }
     }
 
@@ -905,10 +865,10 @@
       scratchCanvas.height = height * dpr;
       ctx.scale(dpr, dpr);
       ctx.clearRect(0, 0, width, height);
-      ctx.fillStyle = 'rgba(226, 232, 240, 0.95)';
+      ctx.fillStyle = 'rgba(148, 163, 184, 0.55)';
       ctx.fillRect(0, 0, width, height);
       ctx.globalCompositeOperation = 'source-over';
-      ctx.strokeStyle = 'rgba(255,255,255,0.75)';
+      ctx.strokeStyle = 'rgba(255,255,255,0.9)';
       ctx.lineWidth = 28;
       ctx.lineCap = 'round';
       ctx.lineJoin = 'round';
@@ -963,7 +923,6 @@
         state.scratchClearedRatio = ratio;
         if (ratio >= 0.8) {
           triggerBurst();
-          showOverlay('success', 'Name revealed! ✨', '✨');
           ctx.clearRect(0, 0, width, height);
           scratchCard.classList.add('revealed');
           state.scratchPointerActive = false;
@@ -1005,17 +964,11 @@
             qr_string: state.currentQrString
           })
         });
-        showOverlay('success', '', '🎉');
-        setTimeout(async () => {
-          scratchCardWrap.classList.add('hidden');
-          reader.classList.remove('hidden');
-          state.currentVishnuName = '';
-          state.currentQrString = '';
-          claimInput.value = '';
-          state.scannerBusy = false;
-          await stopScanner();
-          await startScanner();
-        }, 1300);
+
+        showOverlay('success', '🎉 Great job! Your points have been updated! 🎉');
+        setTimeout(() => {
+          location.reload();
+        }, 1600);
       } catch (error) {
         showOverlay('error', error.message);
       }
