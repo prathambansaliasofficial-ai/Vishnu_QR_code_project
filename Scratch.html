@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scratch and Type Prototype</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 50px 20px;
+            background-color: #f9f9f9;
+        }
+
+        .scratch-container {
+            position: relative;
+            width: 300px;
+            height: 150px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            user-select: none;
+        }
+
+        .hidden-name {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #fff;
+            font-size: 32px;
+            font-weight: bold;
+            color: #d32f2f;
+            z-index: 1;
+            transform: scale(0.9); /* Start slightly smaller for the pop animation */
+        }
+
+        /* The animation applied to the text when revealed */
+        .hidden-name.pop-animation {
+            animation: popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.9); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 2;
+            cursor: pointer;
+            transition: opacity 0.5s ease; /* Smooth fade out */
+        }
+
+        /* Class added via JavaScript when 80% is reached */
+        canvas.revealed {
+            opacity: 0;
+            pointer-events: none; /* Stops user from scratching invisible canvas */
+        }
+
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 300px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        input[type="text"], input[type="file"] {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            text-transform: uppercase;
+        }
+
+        button {
+            padding: 10px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        #message {
+            margin-top: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+        }
+        
+        .success { color: #4CAF50; }
+        .error { color: #f44336; }
+    </style>
+</head>
+<body>
+
+    <div class="scratch-container">
+        <!-- This name comes from the database in the real app -->
+        <div class="hidden-name" id="database-name">GOVINDA</div>
+        <canvas id="scratch-pad"></canvas>
+    </div>
+
+    <div class="controls">
+        <label style="font-size: 14px; color: #555;">1. Upload cover photo (optional):</label>
+        <input type="file" id="image-upload" accept="image/*">
+
+        <label style="font-size: 14px; color: #555; margin-top: 10px;">2. Type the revealed name:</label>
+        <input type="text" id="user-input" placeholder="Type here...">
+        <button id="submit-btn">Verify Name</button>
+        
+        <div id="message"></div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('scratch-pad');
+        const ctx = canvas.getContext('2d', { willReadFrequently: true }); // Optimized for pixel reading
+        const imageUpload = document.getElementById('image-upload');
+        const hiddenNameDiv = document.getElementById('database-name');
+        
+        canvas.width = 300;
+        canvas.height = 150;
+
+        let isDrawing = false;
+        let isRevealed = false;
+        let scratchMovements = 0;
+
+        function fillDefaultCover() {
+            ctx.globalCompositeOperation = 'source-over';
+            ctx.fillStyle = '#9e9e9e'; 
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.fillStyle = '#ffffff';
+            ctx.font = '24px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('Scratch to Reveal!', canvas.width/2, canvas.height/2);
+        }
+
+        fillDefaultCover();
+
+        imageUpload.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const img = new Image();
+                    img.onload = function() {
+                        ctx.globalCompositeOperation = 'source-over';
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                        isRevealed = false;
+                        canvas.classList.remove('revealed');
+                        hiddenNameDiv.classList.remove('pop-animation');
+                    }
+                    img.src = event.target.result;
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        function getCoordinates(e) {
+            const rect = canvas.getBoundingClientRect();
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            return {
+                x: clientX - rect.left,
+                y: clientY - rect.top
+            };
+        }
+
+        function startDrawing(e) {
+            if (isRevealed) return;
+            isDrawing = true;
+            scratch(e);
+        }
+
+        function stopDrawing() {
+            isDrawing = false;
+            // Also check percentage when user lifts their finger
+            if (!isRevealed) checkRevealPercentage();
+        }
+
+        function scratch(e) {
+            if (!isDrawing || isRevealed) return;
+            e.preventDefault(); 
+
+            const { x, y } = getCoordinates(e);
+
+            ctx.globalCompositeOperation = 'destination-out';
+            ctx.beginPath();
+            
+            // BRUSH SIZE INCREASED TO 40
+            ctx.arc(x, y, 40, 0, Math.PI * 2); 
+            ctx.fill();
+
+            // Check percentage every 10 movements to keep mobile performance smooth
+            scratchMovements++;
+            if (scratchMovements % 10 === 0) {
+                checkRevealPercentage();
+            }
+        }
+
+        // Logic to calculate how much is scratched
+        function checkRevealPercentage() {
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+            let transparentPixels = 0;
+            
+            // Check every 32nd pixel (stride of 32) - extremely fast for mobile
+            const stride = 32; 
+            const totalChecks = imageData.length / stride;
+            
+            for (let i = 3; i < imageData.length; i += stride) {
+                // If the alpha channel (transparency) is completely clear
+                if (imageData[i] === 0) { 
+                    transparentPixels++;
+                }
+            }
+            
+            const percentageScratched = (transparentPixels / totalChecks) * 100;
+            
+            // 80% THRESHOLD
+            if (percentageScratched >= 80) {
+                revealCompletely();
+            }
+        }
+
+        function revealCompletely() {
+            isRevealed = true;
+            // Triggers the CSS fade out
+            canvas.classList.add('revealed'); 
+            // Triggers the CSS text pop animation
+            hiddenNameDiv.classList.add('pop-animation');
+        }
+
+        canvas.addEventListener('mousedown', startDrawing);
+        canvas.addEventListener('mousemove', scratch);
+        canvas.addEventListener('mouseup', stopDrawing);
+        canvas.addEventListener('mouseleave', stopDrawing);
+
+        canvas.addEventListener('touchstart', startDrawing);
+        canvas.addEventListener('touchmove', scratch);
+        canvas.addEventListener('touchend', stopDrawing);
+
+        // Verification Logic
+        document.getElementById('submit-btn').addEventListener('click', () => {
+            const userInput = document.getElementById('user-input').value.trim().toUpperCase();
+            const actualName = document.getElementById('database-name').innerText.trim().toUpperCase();
+            const messageDiv = document.getElementById('message');
+
+            if (userInput === actualName) {
+                messageDiv.innerHTML = '✅ Correct! Verified.';
+                messageDiv.className = 'success';
+            } else {
+                messageDiv.innerHTML = '❌ Incorrect. Please try again.';
+                messageDiv.className = 'error';
+            }
+        });
+    </script>
+</body>
+</html>
