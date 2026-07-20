@@ -312,16 +312,26 @@
 
     .overlay-message.show { display: block; }
 
+    .scratch-instruction {
+      margin: 10px auto 0;
+      text-align: center;
+      font-size: 0.9rem;
+      font-weight: 800;
+      letter-spacing: 0.03em;
+      color: #f8fafc;
+      text-transform: uppercase;
+    }
+
     .scratch-card {
       position: relative;
       width: 100%;
       max-width: 360px;
       height: 250px;
-      margin: 16px auto 12px;
+      margin: 12px auto 12px;
       border-radius: 26px;
       overflow: hidden;
       box-shadow: var(--shadow);
-      background: linear-gradient(160deg, #f8fafc, #cbd5e1);
+      background: linear-gradient(180deg, #cbd5e1, #94a3b8);
       border: 1px solid rgba(255,255,255,0.55);
       color: #111827;
     }
@@ -337,9 +347,11 @@
       font-size: 1.65rem;
       font-weight: 900;
       letter-spacing: 0.03em;
-      background: radial-gradient(circle at top, #fde68a, #f59e0b 70%);
+      background: radial-gradient(circle at top, #fef3c7, #f59e0b 70%);
       color: #111827;
+      opacity: 0;
       text-shadow: 0 2px 10px rgba(255,255,255,0.7);
+      transition: opacity 0.25s ease;
     }
 
     .scratch-card canvas {
@@ -350,7 +362,7 @@
       touch-action: none;
     }
 
-    .scratch-card.revealed .scratch-hidden-name { opacity: 0.15; }
+    .scratch-card.revealed .scratch-hidden-name { opacity: 1; }
 
     .claim-wrap {
       display: grid;
@@ -499,11 +511,12 @@
 
       <section id="scanView" class="view active">
         <div class="scan-card">
-          <div class="scan-placeholder">Click below to activate your camera and scan a code.</div>
+          <div class="scan-placeholder">Tap Scan QR and allow the browser to open your camera.</div>
           <div id="reader"></div>
         </div>
 
         <div id="scratchCardWrap" class="hidden">
+          <div class="scratch-instruction">Scratch here to scan</div>
           <div class="scratch-card" id="scratchCard">
             <div class="scratch-hidden-name" id="scratchHiddenName">Loading...</div>
             <canvas id="scratchCanvas" width="320" height="220"></canvas>
@@ -542,7 +555,7 @@
   <div id="greenOverlay" class="overlay overlay-green">✓</div>
   <div id="overlayMessage" class="overlay-message"></div>
 
-  <script src="https://unpkg.com/html5-qrcode@2.3.8/minified/html5-qrcode.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
   <script>
     const STORAGE_KEYS = {
       studentId: 'chetna_student_id',
