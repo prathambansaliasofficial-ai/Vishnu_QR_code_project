@@ -1,82 +1,101 @@
 # Vishnu QR Scavenger Hunt
 
-**A "find the sticker" treasure hunt with scratch-card QR codes, each hiding one of the names of Vishnu, and a live leaderboard.**
+**A college treasure hunt built around hidden QR stickers, digital scratch cards, Vishnu's names, and a live leaderboard.**
 
-Built for the Diwali fest at DTU by a student society focused on spirituality and yoga. The in-app title is *Chetna Scavenger Hunt*.
+The web app's in-product name is **Chetna Scavenger Hunt**. It was created for a DTU Diwali-fest concept by a student society focused on spirituality and yoga.
 
 ## The idea
 
-A traditional college hunt works like this: solve a quiz or riddle, walk to a location, collect a sticker, and win on the strength of your stickers. Riddles are where most people give up.
+A conventional college treasure hunt often asks participants to solve riddles or quizzes, travel to a location, and collect a sticker or reward. This project experiments with a simpler format: **no riddles and no quiz questions — participants just have to find the QR stickers hidden in difficult-to-spot places.** The physical hunt is a game of hide-and-seek.
 
-This hunt removes the riddles. **There is nothing to solve. You just have to find the stickers**, which are hidden in tricky spots around the venue, so it is really a game of hide and seek.
+The digital experience works like this:
 
-1. Find a sticker with a QR code.
-2. Scan it with the web app.
-3. Scratch the card on screen to reveal one of the names of Vishnu (the Vishnu Sahasranama, roughly 1,000 names).
-4. Type the name in and submit it.
-5. Your score updates on the leaderboard, in the same tab.
+1. A participant finds a hidden sticker and scans its QR code using the web app.
+2. The app reveals a digital scratch card.
+3. Scratching the card reveals one name from the **Vishnu Sahasranama** (traditionally 1,008 names of Vishnu).
+4. The participant types the revealed name and submits it to claim points.
+5. The leaderboard, available in the same app, updates the participant's score.
 
-It is a low-effort, fun contest with no mental strain, so more people stay engaged, and in the process they learn the society's name and the Vishnu names. It works as a promotional giveaway for the society rather than a business.
+The intended effect is to make participation easy and fun while introducing people to the society and the names of Vishnu.
 
-## Status
+## Purpose and scope
 
-- Built and tested. About 200 people signed up and used the QR codes in a trial run and it worked.
-- **It was not run at the actual Diwali fest**, so it has not had a full live event yet.
-- Still to do: refine it further for a real event.
+This was a **promotional contest / giveaway concept for a college society**, not a standalone commercial product. The idea was that removing the riddle-solving barrier might keep more students engaged than a conventional quiz-based hunt.
+
+The project was built as a working web-app prototype and tested. **Around 200 people signed up and used the QR-code experience during a trial.** However, it was **not deployed as the actual Diwali-fest activity**, so a full event-scale deployment has not yet happened. It remains a project that can be refined and tried at a future event.
 
 ## Features
 
-- Sign up with name, phone number (10 digits) and optional roll number; log in later with name and phone.
-- QR validation on the server: unknown codes, codes over their scan limit, and names you have already scanned are all rejected.
-- Scratch-card reveal of the name on the phone screen.
-- Live leaderboard ranked by number of scans.
-- A generator that creates the whole set of QR codes and a printable PDF for the stickers.
+- Participant signup using name and a 10-digit phone number; roll number is optional.
+- Login using the participant's name and phone number.
+- Server-side QR validation, including unknown codes, scan limits, and duplicate-name checks for a participant.
+- On-screen scratch-card reveal.
+- Name-entry step before points are claimed.
+- Leaderboard ranked by the number of successful scans.
+- QR-code generation and printable A4 sticker sheets.
 
 ## How it works
 
-**Backend** (`app.py`): a Flask API that also serves `index.html`. Data lives in Supabase (tables `students` and `qr_codes`).
+**Backend — `app.py`**
+
+A Flask API serves the web app and handles participant records, QR validation, claims, and leaderboard data. Supabase stores the `students` and `qr_codes` tables. The claim endpoint calls the Supabase RPC function `process_qr_scan`.
 
 | Endpoint | Purpose |
 |---|---|
-| `POST /api/signup` | Create a participant |
-| `POST /api/login` | Log in with name and phone number |
-| `POST /api/validate_qr` | Check a scanned QR code is valid and not already used by that student |
-| `POST /api/claim_qr` | Record the scan and update the student's score |
-| `GET /api/leaderboard` | Students ranked by `current_scans` |
+| `POST /api/signup` | Create a participant record |
+| `POST /api/login` | Find a participant using name and phone number |
+| `POST /api/validate_qr` | Validate a QR code and check scan limits / duplicate claims |
+| `POST /api/claim_qr` | Claim a valid QR code and update the score through a database function |
+| `GET /api/leaderboard` | Return the top participants by successful scans |
 
-**Frontend** (`index.html`): a single-page web app with sign-up/login, scanner, scratch card and leaderboard views.
+**Frontend — `index.html`**
 
-**QR tooling** (`Vishnu Project/`):
-- `qr_code.py` generates a QR code for each name (with a peacock-feather logo in the centre) and writes the codes to `database_import.csv`.
-- `create_pdf.py` lays the generated QR images out on A4 sheets (12 per page) for printing as stickers.
+A responsive, single-page web app containing signup/login, QR scanning, scratch-card reveal, name submission, and leaderboard views.
 
-`database_import.csv` holds the random QR strings and their Vishnu names, ready to import into the `qr_codes` table.
+**QR-generation tools — `Vishnu Project/`**
 
-## Run it locally
+- `qr_code.py` generates QR images for the Vishnu names and writes the QR data to `database_import.csv`.
+- `create_pdf.py` arranges the generated QR images into printable A4 sheets (12 stickers per page).
+- `database_import.csv` contains the QR strings and associated names for importing into the Supabase `qr_codes` table.
+
+## Run locally
+
+Install the Python dependencies:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-Create a `.env` file (it is git-ignored):
+Create a local `.env` file (do not commit it):
 
-```
+```env
 SUPABASE_URL=...
-SUPABASE_SECRET_KEY=...    # preferred; SUPABASE_KEY (anon) is used as a fallback
+SUPABASE_SECRET_KEY=...    # preferred
+# SUPABASE_KEY=...         # anon-key fallback supported by the app
 ```
 
-Then:
+Then start the Flask app:
 
 ```bash
 python app.py
 ```
 
-You will need a Supabase project with `students` and `qr_codes` tables, and the QR data imported from `database_import.csv`.
+You also need a Supabase project with the `students` and `qr_codes` tables, the QR data imported from `database_import.csv`, and the `process_qr_scan` database function used by the claim endpoint.
 
 ## Deployment
 
-Configured for Vercel (`vercel.json` routes everything to `app.py`). Set the Supabase environment variables in the Vercel project settings.
+The repository includes a Vercel configuration (`vercel.json`) that routes the app and API requests to `app.py`. Configure the Supabase environment variables in the Vercel project settings.
 
-## Tech
+## Tech stack
 
-Python · Flask · Flask-CORS · Supabase · HTML/CSS/JavaScript (canvas scratch card) · `qrcode`, Pillow, ReportLab · Vercel
+- **Backend:** Python, Flask, Flask-CORS
+- **Database / backend service:** Supabase
+- **Frontend:** HTML, CSS, JavaScript, Canvas-based scratch-card interaction
+- **QR and print generation:** qrcode, Pillow, ReportLab
+- **Deployment:** Vercel
+
+## Project status
+
+- Working prototype and QR-code flow tested with approximately 200 participants.
+- Not run as the actual DTU Diwali-fest event.
+- Future work: refine the experience, test it at a live event, and improve operational readiness for larger participation.
