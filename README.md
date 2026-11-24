@@ -1,72 +1,63 @@
-# Vishnu QR Scavenger Hunt
+# Vishnu QR Scavenger Hunt (Chetna Scavenger Hunt)
 
-**A college treasure hunt built around hidden QR stickers, digital scratch cards, Vishnu's names, and a live leaderboard.**
+**A web-based college treasure hunt built around hidden QR stickers, digital scratch cards and a live leaderboard.**
 
-The web app's in-product name is **Chetna Scavenger Hunt**. It was created for a DTU Diwali-fest concept by a student society focused on spirituality and yoga.
+Live demo: https://vishnu-qr-code-project.vercel.app
 
-## The idea
+The application is named *Chetna Scavenger Hunt* in the interface. It was created as a Diwali-fest concept at DTU for a student society focused on spirituality and yoga.
 
-A conventional college treasure hunt often asks participants to solve riddles or quizzes, travel to a location, and collect a sticker or reward. This project experiments with a simpler format: **no riddles and no quiz questions — participants just have to find the QR stickers hidden in difficult-to-spot places.** The physical hunt is a game of hide-and-seek.
+## Concept
 
-The digital experience works like this:
+Conventional college treasure hunts rely on riddles or quizzes. This project removes that barrier: participants only have to **find QR stickers hidden in hard-to-spot places**.
 
-1. A participant finds a hidden sticker and scans its QR code using the web app.
+1. A participant finds a sticker and scans its QR code in the web app.
 2. The app reveals a digital scratch card.
-3. Scratching the card reveals one name from the **Vishnu Sahasranama** (traditionally 1,008 names of Vishnu).
-4. The participant types the revealed name and submits it to claim points.
-5. The leaderboard, available in the same app, updates the participant's score.
+3. Scratching the card reveals one name from the *Vishnu Sahasranama* (the 1,008 names of Vishnu).
+4. The participant enters the revealed name to claim points.
+5. The leaderboard in the same app updates their score.
 
-The intended effect is to make participation easy and fun while introducing people to the society and the names of Vishnu.
+The intended effect is easy, enjoyable participation that also introduces people to the society and the names.
 
-## Purpose and scope
+## Scope and Status
 
-This was a **promotional contest / giveaway concept for a college society**, not a standalone commercial product. The idea was that removing the riddle-solving barrier might keep more students engaged than a conventional quiz-based hunt.
+This was a **promotional contest concept** for a college society, not a commercial product.
 
-The project was built as a working web-app prototype and tested. **Around 200 people signed up and used the QR-code experience during a trial.** However, it was **not deployed as the actual Diwali-fest activity**, so a full event-scale deployment has not yet happened. It remains a project that can be refined and tried at a future event.
+- Built as a working prototype.
+- **Tested with approximately 200 participants** who signed up and used the QR flow during a trial.
+- **Not deployed as the actual Diwali-fest activity**, so event-scale operation has not been demonstrated.
+- Future work: refine the experience, run it at a live event, and improve readiness for larger participation.
 
 ## Features
 
-- Participant signup using name and a 10-digit phone number; roll number is optional.
-- Login using the participant's name and phone number.
-- Server-side QR validation, including unknown codes, scan limits, and duplicate-name checks for a participant.
-- On-screen scratch-card reveal.
-- Name-entry step before points are claimed.
-- Leaderboard ranked by the number of successful scans.
-- QR-code generation and printable A4 sticker sheets.
+- Signup with name and 10-digit phone number (roll number optional); login with name and phone number.
+- Server-side QR validation: unknown codes, scan limits, and duplicate-name checks per participant.
+- On-screen scratch-card reveal and a name-entry step before points are awarded.
+- Leaderboard ranked by number of successful scans.
+- QR generation and printable A4 sticker sheets (12 stickers per page).
 
-## How it works
+## Architecture
 
-**Backend — `app.py`**
-
-A Flask API serves the web app and handles participant records, QR validation, claims, and leaderboard data. Supabase stores the `students` and `qr_codes` tables. The claim endpoint calls the Supabase RPC function `process_qr_scan`.
+**Backend (`app.py`)**: Flask API that serves the app and handles participants, QR validation, claims and the leaderboard. Supabase stores the `students` and `qr_codes` tables; the claim endpoint calls the Supabase RPC function `process_qr_scan`.
 
 | Endpoint | Purpose |
 |---|---|
 | `POST /api/signup` | Create a participant record |
-| `POST /api/login` | Find a participant using name and phone number |
-| `POST /api/validate_qr` | Validate a QR code and check scan limits / duplicate claims |
-| `POST /api/claim_qr` | Claim a valid QR code and update the score through a database function |
-| `GET /api/leaderboard` | Return the top participants by successful scans |
+| `POST /api/login` | Look up a participant by name and phone number |
+| `POST /api/validate_qr` | Validate a QR code; check scan limits and duplicate claims |
+| `POST /api/claim_qr` | Claim a valid code and update the score through a database function |
+| `GET /api/leaderboard` | Return top participants by successful scans |
 
-**Frontend — `index.html`**
+**Frontend (`index.html`)**: responsive single-page app with signup/login, QR scanning, scratch-card reveal (Canvas), name submission and leaderboard views.
 
-A responsive, single-page web app containing signup/login, QR scanning, scratch-card reveal, name submission, and leaderboard views.
+**QR tools (`Vishnu Project/`)**: `qr_code.py` generates QR images and writes `database_import.csv`; `create_pdf.py` lays them out as printable A4 sheets.
 
-**QR-generation tools — `Vishnu Project/`**
-
-- `qr_code.py` generates QR images for the Vishnu names and writes the QR data to `database_import.csv`.
-- `create_pdf.py` arranges the generated QR images into printable A4 sheets (12 stickers per page).
-- `database_import.csv` contains the QR strings and associated names for importing into the Supabase `qr_codes` table.
-
-## Run locally
-
-Install the Python dependencies:
+## Running Locally
 
 ```bash
 pip install -r requirements.txt
 ```
 
-Create a local `.env` file (do not commit it):
+Create a `.env` file (do not commit it):
 
 ```env
 SUPABASE_URL=...
@@ -74,28 +65,14 @@ SUPABASE_SECRET_KEY=...    # preferred
 # SUPABASE_KEY=...         # anon-key fallback supported by the app
 ```
 
-Then start the Flask app:
-
 ```bash
 python app.py
 ```
 
-You also need a Supabase project with the `students` and `qr_codes` tables, the QR data imported from `database_import.csv`, and the `process_qr_scan` database function used by the claim endpoint.
+A Supabase project is required, with the `students` and `qr_codes` tables, QR data imported from `database_import.csv`, and the `process_qr_scan` function.
 
-## Deployment
+**Deployment:** `vercel.json` routes the app and API requests to `app.py`. Set the Supabase variables in the Vercel project settings.
 
-The repository includes a Vercel configuration (`vercel.json`) that routes the app and API requests to `app.py`. Configure the Supabase environment variables in the Vercel project settings.
+## Technology Stack
 
-## Tech stack
-
-- **Backend:** Python, Flask, Flask-CORS
-- **Database / backend service:** Supabase
-- **Frontend:** HTML, CSS, JavaScript, Canvas-based scratch-card interaction
-- **QR and print generation:** qrcode, Pillow, ReportLab
-- **Deployment:** Vercel
-
-## Project status
-
-- Working prototype and QR-code flow tested with approximately 200 participants.
-- Not run as the actual DTU Diwali-fest event.
-- Future work: refine the experience, test it at a live event, and improve operational readiness for larger participation.
+Python, Flask, Flask-CORS · Supabase · HTML, CSS, JavaScript (Canvas) · qrcode, Pillow, ReportLab · Vercel
